@@ -2,31 +2,25 @@ import { useState, useEffect, useCallback } from "react";
 import "./App.css";
 import OnboardingOverlay from "./components/OnboardingOverlay";
 import EmptyState from "./components/EmptyState";
+import BrowserView from "./components/Browser/BrowserView";
 
-type AppScreen = "onboarding" | "main";
+export type AppScreen = "onboarding" | "main" | "browser";
 
 function App() {
   const [screen, setScreen] = useState<AppScreen>("onboarding");
   const [isVisible, setIsVisible] = useState(true);
   const [shortcut, setShortcut] = useState<string>("Ctrl+Shift+W");
 
-  // Check if first run (skip onboarding if already completed)
   useEffect(() => {
     const completed = localStorage.getItem("whisper_onboarding_done");
     const savedShortcut = localStorage.getItem("whisper_shortcut");
-    if (completed === "true") {
-      setScreen("main");
-    }
-    if (savedShortcut) {
-      setShortcut(savedShortcut);
-    }
+    if (completed === "true") setScreen("main");
+    if (savedShortcut) setShortcut(savedShortcut);
   }, []);
 
-  // Dismiss on Escape
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === "Escape" && screen === "main") {
       setIsVisible(false);
-      // In a real Tauri app: invoke("hide_window")
     }
   }, [screen]);
 
@@ -44,11 +38,9 @@ function App() {
 
   const handleHide = () => {
     setIsVisible(false);
-    // In production: invoke("hide_window")
   };
 
   const handleReset = () => {
-    // For dev: reset onboarding
     localStorage.removeItem("whisper_onboarding_done");
     setScreen("onboarding");
     setIsVisible(true);
@@ -56,31 +48,9 @@ function App() {
 
   if (!isVisible) {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          background: "transparent",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {/* Ghost dot persists even when "hidden" in dev mode */}
+      <div className="whisper-hidden-state">
         <div className="ghost-dot" title="Whisper active — press shortcut to summon" />
-        <button
-          onClick={() => setIsVisible(true)}
-          style={{
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            color: "rgba(255,255,255,0.4)",
-            padding: "6px 12px",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "11px",
-            fontFamily: "Inter, sans-serif",
-          }}
-        >
+        <button className="summon-btn" onClick={() => setIsVisible(true)}>
           Summon Whisper
         </button>
       </div>
@@ -89,11 +59,20 @@ function App() {
 
   return (
     <div className="whisper-shell">
-      <div className="ghost-dot" title="Whisper is shielded from screen capture" />
-      {screen === "onboarding" ? (
+      {screen !== "browser" && <div className="ghost-dot" title="Whisper is shielded from screen capture" />}
+      {screen === "onboarding" && (
         <OnboardingOverlay onComplete={handleOnboardingComplete} />
-      ) : (
-        <EmptyState shortcut={shortcut} onHide={handleHide} onReset={handleReset} />
+      )}
+      {screen === "main" && (
+        <EmptyState
+          shortcut={shortcut}
+          onHide={handleHide}
+          onReset={handleReset}
+          onOpenBrowser={() => setScreen("browser")}
+        />
+      )}
+      {screen === "browser" && (
+        <BrowserView onClose={() => setScreen("main")} />
       )}
     </div>
   );

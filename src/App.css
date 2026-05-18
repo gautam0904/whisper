@@ -1,10 +1,8 @@
-/* ============================================================
-   WHISPER — Ghost Interface Design System
-   ============================================================ */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-/* ─── Reset & Root ────────────────────────────────────────── */
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -71,9 +69,6 @@ select {
 }
 
 
-/* Only explicitly interactive elements get no-drag — never override the drag handle */
-button, input, textarea, select, a, [role="button"] {
-}
 
 #root {
   width: 100vw;
@@ -83,7 +78,6 @@ button, input, textarea, select, a, [role="button"] {
   justify-content: stretch;
 }
 
-/* ─── App Shell ───────────────────────────────────────────── */
 .whisper-shell {
   width: 100vw;
   height: 100vh;
@@ -92,8 +86,32 @@ button, input, textarea, select, a, [role="button"] {
   background: transparent;
 }
 
-/* ─── Drag Handle Bar ─────────────────────────────────── */
-/* Grab this bar to move the frameless window anywhere on screen */
+.whisper-hidden-state {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summon-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.4);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: var(--font);
+  transition: all 0.15s ease;
+}
+
+.summon-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.6);
+}
+
 .drag-handle {
   height: 36px;
   width: 100%;
@@ -101,7 +119,6 @@ button, input, textarea, select, a, [role="button"] {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  /* Both CSS and Tauri attribute handle drag — belt and suspenders */
   cursor: grab;
 }
 
@@ -109,7 +126,6 @@ button, input, textarea, select, a, [role="button"] {
   cursor: grabbing;
 }
 
-/* Dots must NOT capture pointer events — clicks must reach the parent drag region */
 .drag-handle-dots {
   display: flex;
   gap: 4px;
@@ -130,7 +146,7 @@ button, input, textarea, select, a, [role="button"] {
 }
 
 
-/* ─── Animations ──────────────────────────────────────────── */
+
 @keyframes summon {
   from {
     opacity: 0;
@@ -194,7 +210,7 @@ button, input, textarea, select, a, [role="button"] {
   50%       { transform: translateY(-2px); }
 }
 
-/* ─── Glass Card ──────────────────────────────────────────── */
+
 .glass-card {
   background: var(--glass-bg);
   backdrop-filter: blur(24px) saturate(140%);
@@ -204,7 +220,7 @@ button, input, textarea, select, a, [role="button"] {
   overflow: hidden;
 }
 
-/* Noise texture overlay */
+
 .glass-card::before {
   content: '';
   position: absolute;
@@ -220,7 +236,7 @@ button, input, textarea, select, a, [role="button"] {
   z-index: 1;
 }
 
-/* ─── Ghost Dot ───────────────────────────────────────────── */
+
 .ghost-dot {
   position: fixed;
   top: 10px;
@@ -233,7 +249,7 @@ button, input, textarea, select, a, [role="button"] {
   z-index: 9999;
 }
 
-/* ─── Onboarding Overlay ──────────────────────────────────── */
+
 .onboarding-overlay {
   width: 100vw;
   height: 100vh;
@@ -250,13 +266,13 @@ button, input, textarea, select, a, [role="button"] {
 
 .onboarding-overlay::-webkit-scrollbar { display: none; }
 
-/* Drag region — kept as spacer but whole bg handles drag now */
+
 .drag-region {
   height: 10px;
   flex-shrink: 0;
 }
 
-/* Step dots */
+
 .step-dots {
   display: flex;
   gap: 8px;
@@ -283,7 +299,7 @@ button, input, textarea, select, a, [role="button"] {
   animation: none;
 }
 
-/* Header */
+
 .onboarding-header {
   text-align: center;
   margin-bottom: var(--sp-md);
@@ -317,7 +333,7 @@ button, input, textarea, select, a, [role="button"] {
   line-height: 1.6;
 }
 
-/* ─── Split Proof Section ──────────────────────────────── */
+
 .split-proof {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -424,7 +440,7 @@ button, input, textarea, select, a, [role="button"] {
   animation: float-label 4s ease-in-out infinite;
 }
 
-/* ─── Live Test Button ────────────────────────────────────── */
+
 .live-test-section {
   margin-bottom: var(--sp-md);
   animation: stagger-in 400ms var(--ease-ghost) 140ms both;
@@ -468,7 +484,7 @@ button, input, textarea, select, a, [role="button"] {
   animation: none;
 }
 
-/* Test pattern overlay */
+
 .test-pattern {
   position: fixed;
   inset: 0;
@@ -520,7 +536,7 @@ button, input, textarea, select, a, [role="button"] {
 
 .test-result-btn:hover { background: rgba(0,0,0,0.1); }
 
-/* Test result feedback */
+
 .test-feedback {
   padding: 10px 14px;
   border-radius: 6px;
@@ -541,7 +557,7 @@ button, input, textarea, select, a, [role="button"] {
   border: 1px solid rgba(255, 200, 80, 0.25);
 }
 
-/* ─── Shortcut Capture ────────────────────────────────────── */
+
 .shortcut-section {
   margin-bottom: var(--sp-md);
   animation: stagger-in 400ms var(--ease-ghost) 180ms both;
@@ -587,7 +603,7 @@ button, input, textarea, select, a, [role="button"] {
   line-height: 1;
 }
 
-/* Keycap */
+
 .keycap {
   display: inline-flex;
   align-items: center;
@@ -639,7 +655,7 @@ button, input, textarea, select, a, [role="button"] {
   text-align: center;
 }
 
-/* ─── Confirm Button ──────────────────────────────────────── */
+
 .confirm-btn-wrap {
   animation: stagger-in 400ms var(--ease-ghost) 220ms both;
 }
@@ -672,7 +688,7 @@ button, input, textarea, select, a, [role="button"] {
   pointer-events: none;
 }
 
-/* Trust line */
+
 .trust-note {
   margin-top: var(--sp-md);
   margin-bottom: var(--sp-sm);
@@ -685,7 +701,7 @@ button, input, textarea, select, a, [role="button"] {
 
 .trust-note strong { color: var(--text-secondary); }
 
-/* ─── Empty State (Main UI) ─────────────────────────────────── */
+
 .empty-state {
   width: 100vw;
   height: 100vh;
@@ -747,7 +763,7 @@ button, input, textarea, select, a, [role="button"] {
   top: 1px;
 }
 
-/* Glass background for main UI */
+
 .main-glass {
   position: absolute;
   inset: 0;
@@ -765,13 +781,13 @@ button, input, textarea, select, a, [role="button"] {
   pointer-events: none;
 }
 
-/* Bottom bar */
+
 .bottom-bar {
   border-top: 1px solid rgba(255, 255, 255, 0.07);
   padding: 8px 18px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .bottom-item {
@@ -808,6 +824,29 @@ button, input, textarea, select, a, [role="button"] {
   background: rgba(255,255,255,0.05);
 }
 
+.browser-open-btn {
+  margin-left: auto;
+  margin-right: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.05);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  flex-shrink: 0;
+}
+
+.live-test-dot {
+  fill: #ff5050;
+  color: #ff5050;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
 .bottom-separator {
   flex: 1;
 }
@@ -818,7 +857,7 @@ button, input, textarea, select, a, [role="button"] {
   letter-spacing: 0.2px;
 }
 
-/* ─── Settings Menu ───────────────────────────────────────── */
+
 .settings-panel {
   position: absolute;
   bottom: 38px;
@@ -866,7 +905,7 @@ button, input, textarea, select, a, [role="button"] {
   margin: 4px 0;
 }
 
-/* ─── Drag Handle (for frameless window) ─────────────────── */
+
 .main-drag-region {
   position: absolute;
   top: 0;

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { Eye, Ban, Circle, Lightbulb } from "lucide-react";
 
 interface Props {
   onComplete: (shortcut: string) => void;
@@ -102,7 +103,6 @@ export default function OnboardingOverlay({ onComplete }: Props) {
 
   return (
     <>
-      {/* Test Pattern Fullscreen */}
       {testState === "testing" && (
         <div className="test-pattern">
           <div className="test-pattern-title">
@@ -114,18 +114,16 @@ export default function OnboardingOverlay({ onComplete }: Props) {
           </div>
           <div className="test-result-btns">
             <button className="test-result-btn" onClick={() => setTestState("failed")}>
-              Yes, I see it ⚠️
+              Yes, I see it
             </button>
             <button className="test-result-btn" onClick={() => setTestState("passed")}>
-              No, just my desktop ✓
+              No, just my desktop
             </button>
           </div>
         </div>
       )}
 
       <div className="glass-card onboarding-overlay">
-
-        {/* ── Drag Handle (grab here to move window) ── */}
         <div
           className="drag-handle"
           data-tauri-drag-region
@@ -138,7 +136,6 @@ export default function OnboardingOverlay({ onComplete }: Props) {
           </div>
         </div>
 
-        {/* Step dots */}
         <div className="step-dots" role="progressbar" aria-valuenow={currentStep} aria-valuemax={4}>
           {STEPS.map((label, i) => (
             <div
@@ -149,7 +146,6 @@ export default function OnboardingOverlay({ onComplete }: Props) {
           ))}
         </div>
 
-        {/* Header */}
         <div className="onboarding-header">
           <div className="app-icon-wrap">
             <svg
@@ -176,11 +172,10 @@ export default function OnboardingOverlay({ onComplete }: Props) {
           </p>
         </div>
 
-        {/* ── Split Proof ── */}
         <div className="split-proof" aria-label="Invisibility demonstration">
           <div className="proof-card you-see">
             <div className="proof-label you">
-              <span>👁️</span> You see
+              <Eye size={13} /> You see
             </div>
             <div className="proof-screen visible-window">
               <div className="proof-window-inner">
@@ -193,7 +188,7 @@ export default function OnboardingOverlay({ onComplete }: Props) {
 
           <div className="proof-card they-see">
             <div className="proof-label they">
-              <span>🚫</span> They see
+              <Ban size={13} /> They see
             </div>
             <div className="proof-screen empty-window">
               Your desktop only — no window visible
@@ -206,7 +201,6 @@ export default function OnboardingOverlay({ onComplete }: Props) {
           "This window is invisible to screen sharing — even full-desktop capture"
         </p>
 
-        {/* ── Live Test ── */}
         <div className="live-test-section">
           {testState === "idle" && (
             <button
@@ -215,23 +209,24 @@ export default function OnboardingOverlay({ onComplete }: Props) {
               onClick={() => setTestState("testing")}
               aria-label="Run live invisibility test"
             >
-              🔴 Live Test — Verify with your meeting app right now
+              <Circle size={12} className="live-test-dot" />
+              Live Test — Verify with your meeting app right now
             </button>
           )}
           {testState === "passed" && (
             <>
               <button className="live-test-btn success" disabled>
-                ✓ Verified Invisible — screen share can't see this window
+                Verified Invisible — screen share can't see this window
               </button>
               <div className="test-feedback success">
-                ✓ Your OS correctly excludes this window from all capture. You're protected.
+                Your OS correctly excludes this window from all capture. You're protected.
               </div>
             </>
           )}
           {testState === "failed" && (
             <>
               <button className="live-test-btn fail" disabled>
-                ⚠️ Fallback Mode — Share a single app window instead
+                Fallback Mode — Share a single app window instead
               </button>
               <div className="test-feedback fail">
                 Your OS allows full-desktop capture of this window. Fix: In Zoom, choose
@@ -242,7 +237,6 @@ export default function OnboardingOverlay({ onComplete }: Props) {
           )}
         </div>
 
-        {/* ── Shortcut Capture ── */}
         <div className="shortcut-section">
           <div className="section-label">Set Your Ghost Key</div>
           <div
@@ -273,11 +267,11 @@ export default function OnboardingOverlay({ onComplete }: Props) {
               <div className="shortcut-status waiting">Waiting for key combo…</div>
             )}
             {shortcutStatus === "captured" && (
-              <div className="shortcut-status available">✓ Available — no conflicts detected</div>
+              <div className="shortcut-status available">Available — no conflicts detected</div>
             )}
             {shortcutStatus === "conflict" && (
               <div className="shortcut-status conflict">
-                ✗ Conflicts with {conflictApp}. Try Ctrl+Shift+W instead.
+                Conflicts with {conflictApp}. Try Ctrl+Shift+W instead.
               </div>
             )}
 
@@ -293,7 +287,6 @@ export default function OnboardingOverlay({ onComplete }: Props) {
           </div>
         </div>
 
-        {/* ── Continue ── */}
         <div className="confirm-btn-wrap">
           <button
             id="start-whisper-btn"
@@ -309,7 +302,8 @@ export default function OnboardingOverlay({ onComplete }: Props) {
         <p className="trust-note">
           <strong>No audio. No recording. No microphone required.</strong><br />
           We never access your mic. This is a typing-only tool.<br />
-          💡 Tip: Keep ChatGPT or Gemini open in your normal browser — type here, read answers there.
+          <Lightbulb size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+          <span>Tip: Keep ChatGPT or Gemini open in your normal browser — type here, read answers there.</span>
         </p>
       </div>
     </>

@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { Settings, X, Trash2, RotateCcw, Monitor } from "lucide-react";
 
 interface Props {
   shortcut: string;
   onHide: () => void;
   onReset: () => void;
+  onOpenBrowser?: () => void;
 }
 
-export default function EmptyState({ shortcut, onHide, onReset }: Props) {
+export default function EmptyState({ shortcut, onHide, onReset, onOpenBrowser }: Props) {
   const [text, setText] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [opacity, setOpacity] = useState(72);
@@ -20,7 +22,6 @@ export default function EmptyState({ shortcut, onHide, onReset }: Props) {
     textareaRef.current?.focus();
   }, []);
 
-  // Native drag — must fire synchronously in the same tick as mousedown
   useEffect(() => {
     const el = dragHandleRef.current;
     if (!el) return;
@@ -59,13 +60,11 @@ export default function EmptyState({ shortcut, onHide, onReset }: Props) {
       className="empty-state"
       style={{ "--glass-opacity": `${opacity}%` } as React.CSSProperties}
     >
-      {/* Glass background */}
       <div
         className="main-glass"
         style={{ background: `rgba(10, 10, 14, ${opacity / 100})` }}
       />
 
-      {/* Drag handle — grab this bar to move the window */}
       <div
         ref={dragHandleRef}
         className="drag-handle"
@@ -79,7 +78,6 @@ export default function EmptyState({ shortcut, onHide, onReset }: Props) {
         </div>
       </div>
 
-      {/* Typing area */}
       <div
         className="typing-area-wrap"
         onClick={() => textareaRef.current?.focus()}
@@ -104,15 +102,9 @@ export default function EmptyState({ shortcut, onHide, onReset }: Props) {
         />
       </div>
 
-      {/* Bottom bar */}
       <div className="bottom-bar" role="toolbar" aria-label="Whisper controls">
         <div className="bottom-item" title="Whisper is shielded from screen capture">
-          <div
-            style={{
-              width: 6, height: 6, borderRadius: "50%",
-              background: "var(--accent)", boxShadow: "0 0 6px var(--accent)", flexShrink: 0,
-            }}
-          />
+          <div className="status-dot" />
           {shortcut} to hide
         </div>
 
@@ -122,6 +114,17 @@ export default function EmptyState({ shortcut, onHide, onReset }: Props) {
           {wordCount > 0 ? `${wordCount} word${wordCount !== 1 ? "s" : ""} · ${charCount} chars` : ""}
         </div>
 
+        {onOpenBrowser && (
+          <button
+            className="bottom-item-btn browser-open-btn"
+            onClick={onOpenBrowser}
+            title="Open AI Browser"
+          >
+            <Monitor size={13} />
+            AI Browser
+          </button>
+        )}
+
         <div style={{ position: "relative" }} ref={settingsRef}>
           <button
             id="settings-btn"
@@ -130,7 +133,7 @@ export default function EmptyState({ shortcut, onHide, onReset }: Props) {
             aria-label="Open settings"
             aria-expanded={showSettings}
           >
-            ≡
+            <Settings size={13} />
           </button>
 
           {showSettings && (
@@ -155,12 +158,12 @@ export default function EmptyState({ shortcut, onHide, onReset }: Props) {
 
               <div className="settings-item" onClick={() => { setText(""); setShowSettings(false); }}>
                 <span className="settings-item-label">Clear text</span>
-                <span style={{ fontSize: 11, color: "var(--text-muted)" }}>⌫</span>
+                <Trash2 size={13} style={{ color: "var(--text-muted)" }} />
               </div>
 
               <div className="settings-item" onClick={() => { setShowSettings(false); onReset(); }}>
                 <span className="settings-item-label">Redo onboarding</span>
-                <span style={{ fontSize: 11, color: "var(--text-muted)" }}>↺</span>
+                <RotateCcw size={13} style={{ color: "var(--text-muted)" }} />
               </div>
             </div>
           )}
@@ -168,7 +171,7 @@ export default function EmptyState({ shortcut, onHide, onReset }: Props) {
 
         <button id="hide-btn" className="bottom-item-btn" onClick={onHide}
           aria-label="Hide Whisper window" title="Hide (or press Esc)">
-          ×
+          <X size={14} />
         </button>
       </div>
     </div>
