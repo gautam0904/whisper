@@ -29,6 +29,11 @@ export default function AudioInputSection() {
 
     useEffect(() => {
         const queryDevices = async () => {
+            if (!navigator.mediaDevices) {
+                setMicDeviceName("Default Microphone");
+                setVirtualDriverInstalled(false);
+                return;
+            }
             try {
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 const audioInputs = devices.filter((d) => d.kind === "audioinput");
@@ -44,7 +49,6 @@ export default function AudioInputSection() {
                 const isMac = navigator.userAgent.toLowerCase().includes("mac");
                 const driverName = isMac ? "BlackHole 2ch" : "VB-Cable";
                 
-                // Backend check for virtual driver instead of relying purely on navigator.mediaDevices (which might need permissions)
                 const hasDriver = await invoke<boolean>("check_audio_driver").catch(() => false);
 
                 setMicDeviceName(hasMic ? label : null);
@@ -56,9 +60,17 @@ export default function AudioInputSection() {
             }
         };
 
-        queryDevices();
-        navigator.mediaDevices.addEventListener("devicechange", queryDevices);
-        return () => navigator.mediaDevices.removeEventListener("devicechange", queryDevices);
+        if (navigator.mediaDevices) {
+            queryDevices();
+            navigator.mediaDevices.addEventListener("devicechange", queryDevices);
+            return () => {
+                if (navigator.mediaDevices) {
+                    navigator.mediaDevices.removeEventListener("devicechange", queryDevices);
+                }
+            };
+        } else {
+            queryDevices();
+        }
     }, [setMicDeviceName, setVirtualDriverInstalled, setVirtualDriverName]);
 
     const handleAutoInstall = async () => {
@@ -216,6 +228,14 @@ export default function AudioInputSection() {
                             )}
                             <button
                                 type="button"
+                                className={`${styles.selectBtn} ${audioSource === "meeting" ? styles.selectedBtn : ""}`}
+                                onClick={handleSelectMeeting}
+                                style={{ marginBottom: "8px" }}
+                            >
+                                {audioSource === "meeting" ? "Selected" : "Select"}
+                            </button>
+                            <button
+                                type="button"
                                 className={styles.selectBtn}
                                 onClick={handleAutoConfigure}
                                 disabled={installStatus === "configuring"}
@@ -236,6 +256,14 @@ export default function AudioInputSection() {
                                     {progressMsg}
                                 </div>
                             )}
+                            <button
+                                type="button"
+                                className={styles.selectBtn}
+                                onClick={handleSelectMeeting}
+                                style={{ marginBottom: "8px" }}
+                            >
+                                Select
+                            </button>
                             <button
                                 type="button"
                                 className={styles.selectBtn}

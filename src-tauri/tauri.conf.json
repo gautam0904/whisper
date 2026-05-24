@@ -13,6 +13,7 @@
     "windows": [
       {
         "title": "Whisper",
+        "url": "index.html",
         "width": 900,
         "height": 620,
         "minWidth": 480,
