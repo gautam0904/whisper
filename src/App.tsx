@@ -1,81 +1,67 @@
-import { useState, useEffect, useCallback } from "react";
-import "./App.css";
-import OnboardingOverlay from "./components/OnboardingOverlay";
-import EmptyState from "./components/EmptyState";
-import BrowserView from "./components/Browser/BrowserView";
+import { useCallback, useEffect } from "react";
+import { BrowserView } from "./features/browser/index";
+import { SettingsPanel } from "./features/settings/index";
+import { OverlayCanvas } from "./features/overlay/index";
+import { useSettingsStore } from "./features/settings/index";
+import { useOnboardingStore } from "./features/onboarding/index";
+import GhostDot from "./shared/components/GhostDot/GhostDot";
+import { APP_SCREEN, useAppStore } from "./shared/stores/appStore";
 
-export type AppScreen = "onboarding" | "main" | "browser";
+export default function App() {
+    const screen = useAppStore((s) => s.screen);
+    const isVisible = useAppStore((s) => s.isVisible);
+    const setScreen = useAppStore((s) => s.setScreen);
+    const setVisible = useAppStore((s) => s.setVisible);
+    const shortcut = useOnboardingStore((s) => s.shortcut);
 
-function App() {
-  const [screen, setScreen] = useState<AppScreen>("onboarding");
-  const [isVisible, setIsVisible] = useState(true);
-  const [shortcut, setShortcut] = useState<string>("Ctrl+Shift+W");
+    useEffect(() => {
+        useSettingsStore.getState().initStore();
+    }, []);
 
-  useEffect(() => {
-    const completed = localStorage.getItem("whisper_onboarding_done");
-    const savedShortcut = localStorage.getItem("whisper_shortcut");
-    if (completed === "true") setScreen("main");
-    if (savedShortcut) setShortcut(savedShortcut);
-  }, []);
-
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === "Escape" && screen === "main") {
-      setIsVisible(false);
-    }
-  }, [screen]);
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
-
-  const handleOnboardingComplete = (savedShortcut: string) => {
-    localStorage.setItem("whisper_onboarding_done", "true");
-    localStorage.setItem("whisper_shortcut", savedShortcut);
-    setShortcut(savedShortcut);
-    setScreen("main");
-  };
-
-  const handleHide = () => {
-    setIsVisible(false);
-  };
-
-  const handleReset = () => {
-    localStorage.removeItem("whisper_onboarding_done");
-    setScreen("onboarding");
-    setIsVisible(true);
-  };
-
-  if (!isVisible) {
-    return (
-      <div className="whisper-hidden-state">
-        <div className="ghost-dot" title="Whisper active — press shortcut to summon" />
-        <button className="summon-btn" onClick={() => setIsVisible(true)}>
-          Summon Whisper
-        </button>
-      </div>
+    const handleKeyDown = useCallback(
+        (e: KeyboardEvent) => {
+            if (e.key === "Escape" && screen === APP_SCREEN.MAIN) {
+                setVisible(false);
+            }
+        },
+        [screen, setVisible],
     );
-  }
 
-  return (
-    <div className="whisper-shell">
-      {screen !== "browser" && <div className="ghost-dot" title="Whisper is shielded from screen capture" />}
-      {screen === "onboarding" && (
-        <OnboardingOverlay onComplete={handleOnboardingComplete} />
-      )}
-      {screen === "main" && (
-        <EmptyState
-          shortcut={shortcut}
-          onHide={handleHide}
-          onReset={handleReset}
-          onOpenBrowser={() => setScreen("browser")}
-        />
-      )}
-      {screen === "browser" && (
-        <BrowserView onClose={() => setScreen("main")} />
-      )}
-    </div>
-  );
+    useEffect(() => {
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [handleKeyDown]);
+
+    const handleHide = () => setVisible(false);
+
+    if (!isVisible) {
+        return (
+            <div className="whisper-shell" style={{ background: "transparent" }}>
+                <GhostDot title="Whisper active — click or press shortcut to summon" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="whisper-shell">
+            {screen !== APP_SCREEN.BROWSER && <GhostDot />}
+
+            {screen === APP_SCREEN.MAIN && (
+                <OverlayCanvas
+                    shortcut={shortcut}
+                    onHide={handleHide}
+                    onOpenBrowser={() => setScreen(APP_SCREEN.BROWSER)}
+                    onOpenSettings={() => setScreen(APP_SCREEN.SETTINGS)}
+                />
+            )}
+
+            {screen === APP_SCREEN.BROWSER && (
+                <BrowserView onClose={() => setScreen(APP_SCREEN.MAIN)} />
+            )}
+
+            {screen === APP_SCREEN.SETTINGS && (
+                <SettingsPanel />
+            )}
+        </div>
+    );
 }
-
-export default App;

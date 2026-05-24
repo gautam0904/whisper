@@ -1,0 +1,122 @@
+@reference "tailwindcss";
+.overlay {
+	@apply w-screen h-screen overflow-y-auto overflow-x-hidden flex flex-col;
+	padding: clamp(16px, 3vh, 36px) clamp(16px, 5vw, 80px);
+	animation: summon 300ms var(--ease-spring) both;
+	scrollbar-width: none;
+}
+.overlay::-webkit-scrollbar {
+	display: none;
+}
+
+.stepDot {
+	@apply w-[6px] h-[6px] rounded-full bg-white/20;
+	transition: all 0.3s var(--ease-spring);
+}
+.stepDot.active {
+	background: var(--color-accent);
+	animation: pulse-dot 2s ease-in-out infinite;
+}
+.stepDot.completed {
+	background: var(--color-white-80);
+}
+
+.iconWrap {
+	color: var(--color-accent);
+	filter: drop-shadow(0 0 12px var(--color-accent-glow));
+}
+
+.proofCard {
+	@apply rounded-md p-[14px] border border-[var(--color-border-subtle)] bg-white/5;
+}
+.proofScreen {
+	@apply bg-white/5 rounded-sm h-[70px] flex items-center justify-center text-[11px] text-[var(--color-text-muted)] text-center p-2 relative overflow-hidden;
+}
+.proofWindowInner {
+	@apply absolute inset-[6px] border border-[var(--color-border-subtle)] rounded-sm flex flex-col items-start justify-center p-2 gap-1;
+	background: var(--color-bg-dark);
+}
+.proofWindowCursor {
+	@apply w-[2px] h-[12px] bg-[var(--color-accent)];
+	animation: blink-cursor 1s step-end infinite;
+}
+.proofTagline {
+	@apply text-[12px] text-[var(--color-text-secondary)];
+	animation: float-label 4s ease-in-out infinite;
+}
+
+.liveTestBtn {
+	@apply px-4 py-[11px] rounded-md border border-[var(--color-danger-border)] bg-[var(--color-danger-dim)] text-[var(--color-text-primary)] text-[var(--font-size-sm)] font-medium cursor-pointer flex items-center justify-center gap-2;
+	transition: all var(--duration-normal) ease;
+}
+.liveTestBtn:hover {
+	@apply bg-[var(--color-danger-active)] border-[var(--color-danger-border)];
+	animation: live-pulse 1.5s ease-in-out infinite;
+}
+.liveTestBtn.success {
+	@apply bg-[var(--color-success-dim)] border-[var(--color-success-border)] text-[var(--color-success)];
+	animation: none;
+}
+.liveTestBtn.fail {
+	@apply bg-[var(--color-warning-dim)] border-[var(--color-warning-border)] text-[var(--color-warning)];
+	animation: none;
+}
+.liveTestDot {
+	@apply fill-[var(--color-danger-bright)] text-[var(--color-danger-bright)];
+	animation: pulse-dot 1.5s ease-in-out infinite;
+}
+.testFeedback {
+	@apply px-[14px] py-[10px] rounded-md text-[12px] mt-[6px];
+	line-height: var(--line-height-normal);
+}
+.feedbackSuccess {
+	@apply bg-[var(--color-success-dim)] text-[var(--color-success)] border border-[var(--color-success-glow)];
+}
+.feedbackFail {
+	@apply bg-[var(--color-warning-dim)] text-[var(--color-warning)] border border-[var(--color-warning-glow)];
+}
+
+.testPattern {
+	@apply fixed inset-0 bg-[var(--color-green-test)] flex flex-col items-center justify-center gap-[var(--space-3)] z-[var(--z-drag)];
+	animation: test-pattern-pulse 1s ease-in-out infinite;
+}
+.testBtn {
+	@apply px-5 py-[10px] rounded-md border-2 border-black bg-transparent text-[var(--font-size-sm)] font-semibold cursor-pointer text-black;
+}
+.testBtn:hover {
+	@apply bg-black/10;
+}
+
+.captureArea {
+	@apply rounded-md border border-[var(--color-border-subtle)] p-[var(--space-4)] flex flex-col gap-[var(--space-3)] outline-none;
+	background: radial-gradient(
+		ellipse at center,
+		var(--color-primary-dim) 0%,
+		var(--color-black-25) 70%
+	);
+}
+.captureArea:focus {
+	@apply border-[var(--color-border-active)];
+}
+.shake {
+	animation: shake-keycap 0.4s ease-out;
+}
+.placeholder {
+	@apply text-[var(--font-size-sm)] text-[var(--color-text-muted)] italic;
+	animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.confirmBtn {
+	@apply p-[13px] rounded-md border-none bg-[var(--color-accent)] text-white text-[14px] font-semibold cursor-pointer tracking-[0.1px];
+	transition: all var(--duration-normal) var(--ease-spring);
+}
+.confirmBtn:not(:disabled):hover {
+	@apply bg-[hsl(220,90%,78%)];
+	box-shadow:
+		0 0 20px var(--color-accent-glow),
+		0 4px 16px var(--color-black-30);
+	transform: translateY(-1px);
+}
+.confirmBtn:disabled {
+	@apply opacity-30 cursor-not-allowed pointer-events-none;
+}

@@ -1,0 +1,162 @@
+/* ============================================================
+   src/styles/animations.css — All @keyframes definitions
+   All animations use transform + opacity only (compositor-safe)
+   ============================================================ */
+
+@keyframes summon {
+	from {
+		opacity: 0;
+		transform: scale(0.96) translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+}
+
+@keyframes dismiss {
+	from {
+		opacity: 1;
+		transform: scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.98);
+	}
+}
+
+@keyframes stagger-in {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes pulse-dot {
+	0%,
+	100% {
+		opacity: 0.35;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1.25);
+	}
+}
+
+@keyframes blink-cursor {
+	0%,
+	49% {
+		opacity: 1;
+	}
+	50%,
+	100% {
+		opacity: 0;
+	}
+}
+
+@keyframes shake-keycap {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+	15% {
+		transform: translateX(-5px);
+	}
+	30% {
+		transform: translateX(5px);
+	}
+	45% {
+		transform: translateX(-4px);
+	}
+	60% {
+		transform: translateX(4px);
+	}
+	75% {
+		transform: translateX(-2px);
+	}
+	90% {
+		transform: translateX(2px);
+	}
+}
+
+@keyframes live-pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 var(--color-danger-glow);
+	}
+	50% {
+		box-shadow: 0 0 0 6px transparent;
+	}
+}
+
+@keyframes float-label {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-2px);
+	}
+}
+
+@keyframes test-pattern-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.85;
+	}
+}
+
+@keyframes pulse-green {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 var(--color-success-glow);
+	}
+	50% {
+		box-shadow: 0 0 0 8px transparent;
+	}
+}
+
+@keyframes dash-flow {
+	to {
+		stroke-dashoffset: -20;
+	}
+}
+
+@keyframes waveform-bar {
+	0%,
+	100% {
+		transform: scaleY(0.3);
+	}
+	50% {
+		transform: scaleY(1);
+	}
+}
+
+@keyframes orbit-glow {
+	0%,
+	100% {
+		box-shadow: 0 0 8px 2px var(--color-accent-dim);
+	}
+	50% {
+		box-shadow: 0 0 16px 4px var(--color-accent-glow);
+	}
+}
+
+@keyframes status-blink {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+

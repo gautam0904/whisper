@@ -1,0 +1,131 @@
+/* ============================================================
+   src/styles/global.css — Body, Root, Cursor, Scrollbar
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+html,
+body {
+	width: 100%;
+	height: 100%;
+	background: transparent;
+	font-family: var(--font-ui);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	overflow: hidden;
+	user-select: none;
+	color: var(--color-text-primary);
+}
+
+#root {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	align-items: stretch;
+	justify-content: stretch;
+}
+
+/* Restore cursor for interactive elements */
+button,
+a,
+[role="button"] {
+	cursor: pointer;
+}
+
+input,
+textarea {
+	cursor: text;
+}
+
+select {
+	cursor: default;
+}
+
+/* Whisper shell — transparent container */
+.whisper-shell {
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background: transparent;
+}
+
+/* Noise texture mixin — applied via ::before on glass surfaces */
+.glass-noise::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");
+	pointer-events: none;
+	z-index: 0;
+	border-radius: inherit;
+}
+
+/* Glass card surface — used by onboarding panel */
+.glass-card {
+	background: var(--color-glass-bg);
+	backdrop-filter: blur(24px) saturate(140%);
+	-webkit-backdrop-filter: blur(24px) saturate(140%);
+	border: 1px solid var(--color-border-subtle);
+	position: relative;
+	overflow: hidden;
+}
+
+.glass-card > * {
+	position: relative;
+	z-index: 1;
+}
+
+/* Drag handle — shared between onboarding and overlay */
+.drag-handle {
+	height: 36px;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	cursor: grab;
+}
+
+.drag-handle:active {
+	cursor: grabbing;
+}
+
+.drag-handle-dots {
+	display: flex;
+	gap: var(--space-1);
+	opacity: 0.25;
+	transition: opacity var(--duration-normal) ease;
+	pointer-events: none;
+}
+
+.drag-handle:hover .drag-handle-dots {
+	opacity: 0.6;
+}
+
+.drag-handle-dot {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: var(--color-white-80);
+}
+
+/* High-contrast accessibility override */
+@media (forced-colors: active) {
+	.glass-card {
+		backdrop-filter: none;
+		background: Canvas;
+		border: 1px solid ButtonText;
+	}
+}
+
+/* Reduce-motion override */
+@media (prefers-reduced-motion: reduce) {
+	/* biome-ignore lint/style/noDescendingSpecificity: global reset */
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms;
+		transition-duration: 0.01ms;
+	}
+}

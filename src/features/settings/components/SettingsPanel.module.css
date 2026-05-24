@@ -1,0 +1,204 @@
+.container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background: var(--color-bg-panel);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  position: relative;
+}
+
+.sidebar {
+  width: 180px;
+  background: rgba(0, 0, 0, 0.4);
+  border-right: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4) 0;
+  flex-shrink: 0;
+}
+
+.sidebarHeader {
+  font-size: var(--font-size-2xs);
+  font-weight: bold;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: var(--space-2) var(--space-4) var(--space-1);
+}
+
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--duration-fast) ease;
+  width: 100%;
+}
+
+.sidebarItem:hover {
+  background: var(--color-white-5);
+  color: var(--color-text-primary);
+}
+
+.sidebarItemActive {
+  color: var(--color-accent);
+  background: var(--color-accent-dim);
+  border-left: 2px solid var(--color-accent);
+}
+
+.content {
+  flex: 1;
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+}
+
+.closeBtn:hover {
+  background: var(--color-white-5);
+  color: var(--color-text-primary);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.rowHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.subLabel {
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+}
+
+.input {
+  background: var(--color-white-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-xs);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--color-accent);
+}
+
+.select {
+  background: var(--color-white-10);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-xs);
+  outline: none;
+  cursor: pointer;
+}
+
+.switch {
+  width: 32px;
+  height: 16px;
+  border-radius: var(--radius-pill);
+  background: var(--color-white-10);
+  position: relative;
+  cursor: pointer;
+  transition: background var(--duration-normal) ease;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-text-secondary);
+  transition: transform var(--duration-normal) var(--ease-spring);
+}
+
+.switchActive {
+  background: var(--color-accent);
+}
+
+.switchActive::after {
+  transform: translateX(16px);
+  background: var(--color-white);
+}
+
+.badge {
+  background: var(--color-white-10);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-2xs);
+  padding: 1px var(--space-2);
+  margin-left: var(--space-2);
+}
+
+.btn {
+  background: var(--color-accent);
+  color: var(--color-bg-dark);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: all var(--duration-fast) ease;
+}
+
+.btn:hover {
+  filter: brightness(1.1);
+}

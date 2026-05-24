@@ -1,0 +1,70 @@
+@reference "tailwindcss";
+
+.modalOverlay {
+	@apply absolute inset-0 flex items-center justify-center z-[200];
+	background: rgba(0, 0, 0, 0.6);
+}
+
+.modal {
+	@apply rounded-[12px] p-[20px] w-[320px] flex flex-col gap-[12px];
+	background: var(--color-bg-panel);
+	border: 1px solid var(--color-white-12);
+	box-shadow: 0 16px 48px var(--color-black-50);
+}
+
+.modalTitle {
+	@apply text-[14px] font-semibold;
+	font-family: var(--font-ui);
+	color: var(--color-text-primary);
+}
+
+.modal label {
+	@apply flex flex-col gap-[5px] text-[11px] uppercase tracking-[0.5px];
+	font-family: var(--font-ui);
+	color: var(--color-white-30);
+}
+
+.modal input[type="text"],
+.modal input:not([type="color"]) {
+	@apply px-[10px] py-[7px] rounded-[6px] text-[13px] outline-none transition-colors duration-200;
+	background: var(--color-black-50);
+	border: 1px solid var(--color-white-10);
+	color: var(--color-white);
+	font-family: var(--font-ui);
+}
+
+.modal input:focus {
+	border-color: var(--color-white-30);
+}
+
+.modal input[type="color"] {
+	@apply w-[40px] h-[28px] rounded-[4px] bg-transparent cursor-pointer p-[2px];
+	border: 1px solid var(--color-white-10);
+}
+
+.modalActions {
+	@apply flex justify-end gap-[8px] mt-[4px];
+}
+
+.modalCancel {
+	@apply px-[16px] py-[7px] rounded-[6px] text-[13px] cursor-pointer;
+	background: var(--color-white-6);
+	border: 1px solid var(--color-white-10);
+	color: var(--color-text-secondary);
+	font-family: var(--font-ui);
+}
+
+.modalSave {
+	@apply px-[18px] py-[7px] rounded-[6px] text-[13px] font-semibold cursor-pointer transition-colors duration-200 border-none;
+	background: var(--color-accent);
+	color: var(--color-white);
+	font-family: var(--font-ui);
+}
+
+.modalSave:hover:not(:disabled) {
+	background: var(--color-accent);
+}
+
+.modalSave:disabled {
+	@apply opacity-30 cursor-not-allowed;
+}

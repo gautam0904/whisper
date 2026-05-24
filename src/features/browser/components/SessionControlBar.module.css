@@ -1,0 +1,189 @@
+.controlBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-controls);
+  -webkit-app-region: drag;
+}
+
+.noDrag {
+  -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.ctrlBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-white-5);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+  white-space: nowrap;
+}
+
+.ctrlBtn:hover {
+  background: var(--color-white-10);
+  border-color: var(--color-border-active);
+  color: var(--color-text-primary);
+}
+
+.aiSwitcher {
+  position: relative;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: var(--space-1);
+  background: var(--color-bg-panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border-active);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+  min-width: 160px;
+  z-index: var(--z-modal);
+  box-shadow: var(--shadow-overlay);
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+  text-align: left;
+}
+
+.dropdownItem:hover {
+  background: var(--color-white-5);
+  color: var(--color-text-primary);
+}
+
+.dropdownItemActive {
+  color: var(--color-accent);
+  background: var(--color-accent-dim);
+}
+
+.dropdownDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-white-5);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-muted);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+  white-space: nowrap;
+}
+
+.toggleBtnActive {
+  background: var(--color-success-dim);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.toggleBtn:hover {
+  background: var(--color-white-10);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.stopBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-danger-dim);
+  border: 1px solid var(--color-danger-border);
+  color: var(--color-danger);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+  white-space: nowrap;
+}
+
+.stopBtn:hover {
+  background: var(--color-danger-active);
+  border-color: var(--color-danger);
+}
+
+.statusPills {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+  background: var(--color-white-5);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-pill);
+}
+
+.pillDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.stateGray { color: var(--color-text-muted); }
+.stateGray .pillDot { background: var(--color-text-muted); }
+
+.stateGreen { color: var(--color-success); border: 1px solid var(--color-success-border); background: var(--color-success-dim); }
+.stateGreen .pillDot { background: var(--color-success); box-shadow: 0 0 5px var(--color-success); }
+
+.stateBlue { color: var(--color-accent); border: 1px solid var(--color-border-active); background: var(--color-accent-dim); }
+.stateBlue .pillDot { background: var(--color-accent); box-shadow: 0 0 5px var(--color-accent); }
+
+.stateYellow { color: var(--color-warning); border: 1px solid var(--color-warning-border); background: var(--color-warning-dim); }
+.stateYellow .pillDot { background: var(--color-warning); box-shadow: 0 0 5px var(--color-warning); }
+
+.statePurple { color: var(--color-accent); border: 1px solid var(--color-border-active); background: var(--color-accent-dim); }
+.statePurple .pillDot { background: var(--color-accent); box-shadow: 0 0 5px var(--color-accent); }
+
+.autoSubmitOn { color: var(--color-success); }

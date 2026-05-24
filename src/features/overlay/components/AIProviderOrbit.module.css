@@ -1,0 +1,105 @@
+.orbit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.orbitLabel {
+  font-size: var(--font-size-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--color-text-muted);
+}
+
+.providerRow {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.providerItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-spring);
+}
+
+.providerItem:hover {
+  transform: translateY(-2px);
+}
+
+.providerCircle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-white-5);
+  border: 2px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all var(--duration-normal) var(--ease-spring);
+}
+
+.providerCircle:hover {
+  border-color: var(--color-border-active);
+  background: var(--color-white-10);
+}
+
+.selectedCircle {
+  border-color: var(--color-accent);
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+  transform: scale(1.1);
+  animation: orbit-glow 2.5s ease-in-out infinite;
+}
+
+.providerName {
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+  max-width: 60px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectedLabel {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.addBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px dashed var(--color-border-active);
+  background: transparent;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: var(--font-size-md);
+  transition: all var(--duration-fast) ease;
+  align-self: center;
+  margin-top: var(--space-1);
+}
+
+.addBtn:hover {
+  background: var(--color-white-5);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}

@@ -1,0 +1,53 @@
+.browser-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  background: transparent;
+  overflow: hidden;
+}
+
+.browser-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13px;
+  font-family: var(--font-ui);
+  color: var(--color-text-muted);
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--color-white-10);
+  border-top-color: var(--color-accent);
+  animation: spin 0.7s linear infinite;
+}
+
+.empty-hint {
+  font-style: italic;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.shortcut-hints {
+  position: fixed;
+  bottom: var(--space-2);
+  right: var(--space-4);
+  display: flex;
+  gap: var(--space-3);
+  font-size: 10px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  opacity: 0.5;
+  z-index: var(--z-controls);
+}

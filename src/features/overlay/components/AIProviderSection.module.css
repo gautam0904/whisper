@@ -1,0 +1,206 @@
+.section {
+  width: 100%;
+  max-width: 800px;
+  background: var(--color-black-25);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.orbitArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: var(--space-4) 0;
+}
+
+.hub {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--color-bg-panel);
+  border: 2px solid var(--color-border-active);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  box-shadow: var(--shadow-glow);
+  z-index: 2;
+  margin-bottom: var(--space-4);
+  animation: float 4s ease-in-out infinite;
+}
+
+.rayContainer {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 500px;
+  margin-top: var(--space-2);
+  position: relative;
+}
+
+.providerCircle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-white-5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-spring);
+}
+
+.providerCircle:hover {
+  border-color: var(--color-border-active);
+  transform: translateY(-2px);
+  color: var(--color-text-primary);
+}
+
+.selectedCircle {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 12px var(--color-accent-glow);
+  color: var(--color-accent);
+  background: var(--color-accent-dim);
+}
+
+.providerItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.providerLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+}
+
+.indicatorGreen {
+  background: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
+}
+
+.selectedLabel {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.infoBanner {
+  margin-top: var(--space-6);
+  width: 100%;
+  background: var(--color-white-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg-overlay);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+}
+
+.modal {
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border-active);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-overlay);
+}
+
+.modalTitle {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.formGroup {
+  margin-bottom: var(--space-4);
+}
+
+.formLabel {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-1);
+}
+
+.formInput {
+  width: 100%;
+  background: var(--color-white-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-primary);
+  outline: none;
+  font-size: var(--font-size-sm);
+}
+
+.formInput:focus {
+  border-color: var(--color-accent);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.btn {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.btnSec {
+  background: var(--color-white-5);
+  color: var(--color-text-secondary);
+}
+
+.btnPri {
+  background: var(--color-accent);
+  color: var(--color-bg-dark);
+}

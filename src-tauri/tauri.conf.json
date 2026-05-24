@@ -24,7 +24,8 @@
         "visible": true,
         "center": true,
         "focus": true,
-        "resizable": true
+        "resizable": true,
+        "shadow": false
       }
     ],
     "security": {
