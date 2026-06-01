@@ -1,0 +1,159 @@
+.section {
+    background: linear-gradient(
+        135deg,
+        rgba(30, 35, 60, 0.55) 0%,
+        rgba(14, 14, 18, 0.75) 100%
+    );
+    border: 1px solid rgba(80, 120, 255, 0.18);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: relative;
+    overflow: hidden;
+}
+
+.section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(80, 120, 255, 0.04) 50%,
+        transparent 100%
+    );
+    pointer-events: none;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: linear-gradient(135deg, rgba(80, 120, 255, 0.18), rgba(60, 100, 220, 0.12));
+    border: 1px solid rgba(80, 120, 255, 0.35);
+    border-radius: var(--radius-pill);
+    padding: 4px 12px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-accent);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.title {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    flex: 1;
+}
+
+.subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-normal);
+    margin-top: calc(-1 * var(--space-1));
+}
+
+.checklist {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.checkRow {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    transition: background var(--duration-fast) var(--ease-out);
+}
+
+.checkRow:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.checkIcon {
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.checkLabel {
+    flex: 1;
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+}
+
+.checkNote {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: 2px;
+}
+
+.divider {
+    height: 1px;
+    background: var(--color-border-subtle);
+    border: none;
+    margin: 0;
+}
+
+.deviceRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+}
+
+.deviceIcon {
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+}
+
+.deviceInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.deviceLabel {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+.deviceName {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+.deviceNameLoading {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.mandatoryNote {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    padding-top: var(--space-1);
+}

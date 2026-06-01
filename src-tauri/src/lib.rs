@@ -1,6 +1,15 @@
 pub mod commands;
 pub mod error;
+pub mod services;
+
+use services::audio_service::{capture_original_output_device, restore_output_device, AudioResetGuard};
+use std::sync::Mutex;
 use tauri::Manager;
+use tauri_plugin_global_shortcut::GlobalShortcutExt;
+
+pub struct AppAudioState {
+    pub guard: Mutex<Option<AudioResetGuard>>,
+}
 
 #[cfg(target_os = "macos")]
 fn exclude_from_screen_capture(window: &tauri::WebviewWindow) {
@@ -39,6 +48,9 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .manage(AppAudioState {
+            guard: Mutex::new(None),
+        })
         .setup(|app| {
             let window = app
                 .get_webview_window("main")
@@ -46,7 +58,38 @@ pub fn run() {
 
             exclude_from_screen_capture(&window);
 
+            let audio_state = app.state::<AppAudioState>();
+            match capture_original_output_device() {
+                Ok(guard) => {
+                    if let Ok(mut lock) = audio_state.guard.lock() {
+                        *lock = Some(guard);
+                    }
+                }
+                Err(_) => {}
+            }
+
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            match event {
+                tauri::WindowEvent::CloseRequested { .. }
+                | tauri::WindowEvent::Destroyed => {
+                    let app = window.app_handle();
+
+                    if let Some(audio_state) = app.try_state::<AppAudioState>() {
+                        if let Ok(lock) = audio_state.guard.lock() {
+                            if let Some(ref guard) = *lock {
+                                let _ = restore_output_device(guard);
+                            }
+                        }
+                    }
+
+                    let _ = app
+                        .global_shortcut()
+                        .unregister_all();
+                }
+                _ => {}
+            }
         })
         .invoke_handler(tauri::generate_handler![
             commands::window::get_platform,
@@ -66,6 +109,7 @@ pub fn run() {
             commands::audio::check_audio_driver,
             commands::audio::install_audio_driver,
             commands::audio::auto_configure_audio,
+            commands::audio::get_original_audio_device,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")

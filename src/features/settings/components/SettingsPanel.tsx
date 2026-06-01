@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { X, Mic, Volume2, Globe } from "lucide-react";
+import { X, Mic, Volume2, Globe, ShieldCheck } from "lucide-react";
 import { useAppStore, APP_SCREEN } from "../../../shared/stores/appStore";
 import { useSettingsStore, AIProvider } from "../index";
 import { useOverlayStore } from "../../overlay/store/overlayStore";
 import { invoke } from "@tauri-apps/api/core";
 import styles from "./SettingsPanel.module.css";
+import SecurityResetSection from "./SecurityResetSection";
 
-type Tab = "sources" | "voice" | "chatgpt" | "gemini" | "deepseek" | "google";
+type Tab = "sources" | "voice" | "chatgpt" | "gemini" | "deepseek" | "google" | "privacy";
 
 export default function SettingsPanel() {
     const setScreen = useAppStore((s) => s.setScreen);
@@ -87,6 +88,15 @@ export default function SettingsPanel() {
                         <span>{p.name}</span>
                     </button>
                 ))}
+                <div className={styles.sidebarHeader}>Privacy</div>
+                <button
+                    type="button"
+                    className={`${styles.sidebarItem} ${activeTab === "privacy" ? styles.sidebarItemActive : ""}`}
+                    onClick={() => setActiveTab("privacy")}
+                >
+                    <ShieldCheck size={14} />
+                    <span>OS Reset</span>
+                </button>
             </div>
 
             <div className={styles.content}>
@@ -229,6 +239,11 @@ export default function SettingsPanel() {
                         </div>
                     );
                 })}
+                {activeTab === "privacy" && (
+                    <div className={styles.section}>
+                        <SecurityResetSection />
+                    </div>
+                )}
             </div>
         </div>
     );

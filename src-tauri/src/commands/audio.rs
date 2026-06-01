@@ -1,5 +1,6 @@
 use crate::error::AppError;
-use tauri::AppHandle;
+use crate::AppAudioState;
+use tauri::{AppHandle, State};
 
 #[cfg(target_os = "macos")]
 pub async fn check_mac_audio() -> Result<bool, AppError> {
@@ -178,4 +179,19 @@ pub async fn auto_configure_audio() -> Result<(), AppError> {
     }
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn get_original_audio_device(
+    state: State<'_, AppAudioState>,
+) -> Result<String, AppError> {
+    let lock = state
+        .guard
+        .lock()
+        .map_err(|e| AppError::Audio(format!("State lock poisoned: {}", e)))?;
+
+    Ok(lock
+        .as_ref()
+        .map(|g| g.original_device.clone())
+        .unwrap_or_default())
 }

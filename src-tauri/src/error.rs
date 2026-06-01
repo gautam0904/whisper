@@ -12,6 +12,8 @@ pub enum AppError {
     Shortcut(String),
     #[error("Internal error: {0}")]
     Internal(String),
+    #[error("Audio device operation failed: {0}")]
+    Audio(String),
 }
 
 impl Serialize for AppError {

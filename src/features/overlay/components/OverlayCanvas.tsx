@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import GhostDot from "../../../shared/components/GhostDot/GhostDot";
 import { checkPermissions, OSPermissions, openAccessibilitySettings } from "../../../shared/services/permissionsService";
-import { AlertTriangle, ExternalLink, Settings, X, MessageSquare, Play } from "lucide-react";
+import { AlertTriangle, ExternalLink, Settings, X, MessageSquare, Play, ShieldCheck } from "lucide-react";
 import AudioInputSection from "./AudioInputSection";
 import AIProviderSection from "./AIProviderSection";
 import AdvancedContextSection from "./AdvancedContextSection";
@@ -85,6 +85,21 @@ export default function OverlayCanvas({
             </div>
 
             <div className={styles.bottomBar}>
+                <span
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        fontSize: "var(--font-size-xs)",
+                        color: "var(--color-success)",
+                        opacity: 0.75,
+                        userSelect: "none",
+                    }}
+                    title="All OS-level changes (audio routing, shortcuts) are automatically undone when the app quits"
+                >
+                    <ShieldCheck size={11} />
+                    OS Reset on Quit
+                </span>
                 <div style={{ flex: 1 }} />
                 <div className={styles.barRight}>
                     <span className={styles.shortcutHint}>Summon: {shortcut}</span>
