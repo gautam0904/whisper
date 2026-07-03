@@ -24,6 +24,7 @@ tauri-plugin-global-shortcut = "2"
 url = "2"
 thiserror = "2.0.18"
 tauri-plugin-shell = "2.3.5"
+tokio = { version = "1.52.3", features = ["full"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 tauri = { version = "2", features = ["macos-private-api", "unstable"] }
@@ -32,9 +33,7 @@ cocoa = "0.26"
 block = "0.1"
 
 [target.'cfg(not(target_os = "macos"))'.dependencies]
-tauri = { version = "2", features = ["unstable"] }
-
-tokio = { version = "1.52.3", features = ["full"] }
+tauri = { version = "2", features = ["macos-private-api", "unstable"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 cpal = "0.15.3"
