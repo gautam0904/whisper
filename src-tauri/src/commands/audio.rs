@@ -1,6 +1,6 @@
 use crate::error::AppError;
 use crate::AppAudioState;
-use tauri::{AppHandle, State};
+use tauri::State;
 
 #[cfg(target_os = "macos")]
 pub async fn check_mac_audio() -> Result<bool, AppError> {
@@ -121,7 +121,7 @@ pub async fn auto_configure_audio() -> Result<(), AppError> {
     {
         // Use a known PowerShell snippet with C# reflection to set default audio device
         // This avoids needing undocumented COM interfaces (IPolicyConfig) in Rust which is extremely complex.
-        let ps_script = r#"
+        let _ps_script = r#"
             $code = @"
             using System;
             using System.Runtime.InteropServices;

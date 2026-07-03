@@ -29,12 +29,12 @@ fn exclude_from_screen_capture(window: &tauri::WebviewWindow) {
 #[cfg(target_os = "windows")]
 fn exclude_from_screen_capture(window: &tauri::WebviewWindow) {
     use windows::Win32::Foundation::HWND;
-    use windows::Win32::UI::WindowsAndMessaging::SetWindowDisplayAffinity;
+    use windows::Win32::UI::WindowsAndMessaging::{SetWindowDisplayAffinity, WINDOW_DISPLAY_AFFINITY};
 
     const WDA_EXCLUDEFROMCAPTURE: u32 = 0x00000011;
 
     let hwnd = window.hwnd().expect("Failed to get HWND");
-    let _ = unsafe { SetWindowDisplayAffinity(HWND(hwnd.0 as isize), WDA_EXCLUDEFROMCAPTURE) };
+    let _ = unsafe { SetWindowDisplayAffinity(HWND(hwnd.0 as *mut std::ffi::c_void), WINDOW_DISPLAY_AFFINITY(WDA_EXCLUDEFROMCAPTURE)) };
 }
 
 #[cfg(target_os = "linux")]
