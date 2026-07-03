@@ -46,10 +46,7 @@
     ],
     "macOS": {
       "entitlements": "Entitlements.plist",
-      "infoPlist": {
-        "NSSpeechRecognitionUsageDescription": "Whisper uses speech recognition to convert your voice into text for the AI chat box.",
-        "NSMicrophoneUsageDescription": "Whisper needs microphone access to transcribe your voice into the AI chat box."
-      }
+      "infoPlist": "Info.plist"
     }
   }
 }

@@ -3,3 +3,9 @@ linker = "rust-lld"
 
 [target.aarch64-pc-windows-msvc]
 linker = "rust-lld"
+
+[target.aarch64-apple-darwin]
+runner = "/Users/test/whisper/.cargo/macos-runner.sh"
+
+[target.x86_64-apple-darwin]
+runner = "/Users/test/whisper/.cargo/macos-runner.sh"
