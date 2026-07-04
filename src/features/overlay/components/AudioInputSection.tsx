@@ -84,32 +84,16 @@ export default function AudioInputSection() {
             setProgressMsg("Step 2/3: Installing...");
             await new Promise((r) => setTimeout(r, 2000));
             
-            setProgressMsg("Step 3/3: Configuring audio routing...");
-            await invoke("auto_configure_audio");
-            
             setInstallStatus("done");
-            setProgressMsg("✅ Done — Meeting Audio ready");
+            setProgressMsg("✅ Driver Installed — Please configure audio manually");
             setVirtualDriverInstalled(true);
-            setAudioSource("meeting");
         } catch (e: any) {
             setInstallStatus("error");
             setProgressMsg(`❌ Failed: ${e}`);
         }
     };
 
-    const handleAutoConfigure = async () => {
-        setInstallStatus("configuring");
-        setProgressMsg("Configuring audio routing...");
-        try {
-            await invoke("auto_configure_audio");
-            setInstallStatus("done");
-            setProgressMsg("🟢 Configured — capturing all system audio");
-            setAudioSource("meeting");
-        } catch (e: any) {
-            setInstallStatus("error");
-            setProgressMsg(`❌ Failed: ${e}`);
-        }
-    };
+
 
     const startTestAudio = async () => {
         if (testActive) {
@@ -234,14 +218,6 @@ export default function AudioInputSection() {
                             >
                                 {audioSource === "meeting" ? "Selected" : "Select"}
                             </button>
-                            <button
-                                type="button"
-                                className={styles.selectBtn}
-                                onClick={handleAutoConfigure}
-                                disabled={installStatus === "configuring"}
-                            >
-                                {installStatus === "configuring" ? "Configuring..." : "Auto-Configure"}
-                            </button>
                         </>
                     ) : (
                         <>
@@ -268,9 +244,9 @@ export default function AudioInputSection() {
                                 type="button"
                                 className={styles.selectBtn}
                                 onClick={handleAutoInstall}
-                                disabled={installStatus === "installing" || installStatus === "configuring"}
+                                disabled={installStatus === "installing"}
                             >
-                                {installStatus === "installing" || installStatus === "configuring" ? "Installing..." : "Install & Configure Automatically"}
+                                {installStatus === "installing" ? "Installing..." : "Install Driver Automatically"}
                             </button>
                         </>
                     )}
@@ -328,7 +304,7 @@ export default function AudioInputSection() {
                               <div className={styles.step}>
                                   <strong>Step 2: Hear Audio (Multi-Output Device Setup)</strong>
                                   <div className={styles.infoBox}>
-                                      1. Click <strong>Auto-Configure</strong> above to open the <strong>Audio MIDI Setup</strong> utility.<br />
+                                      1. Open the <strong>Audio MIDI Setup</strong> utility on your Mac (search via Spotlight).<br />
                                       2. Click the <strong>+</strong> button (bottom-left) and choose <strong>Create Multi-Output Device</strong>.<br />
                                       3. Check the boxes next to both <strong>BlackHole 2ch</strong> and your physical <strong>Speakers/Headphones</strong>.<br />
                                       4. In Sound Settings, set your <strong>Output Device</strong> to this new <strong>Multi-Output Device</strong>.
@@ -349,7 +325,7 @@ export default function AudioInputSection() {
                               <div className={styles.step}>
                                   <strong>Step 2: Hear Audio (Listen to Device Setup)</strong>
                                   <div className={styles.infoBox}>
-                                      1. Click <strong>Auto-Configure</strong> above to open the Windows <strong>Sound Control Panel</strong>.<br />
+                                      1. Open the Windows <strong>Sound Control Panel</strong> (search "Change system sounds").<br />
                                       2. Go to the <strong>Recording</strong> tab, right-click <strong>Cable Output</strong>, and choose <strong>Properties</strong>.<br />
                                       3. Go to the <strong>Listen</strong> tab and check <strong>Listen to this device</strong>.<br />
                                       4. Choose your primary speakers/headphones in the dropdown, then click Apply.

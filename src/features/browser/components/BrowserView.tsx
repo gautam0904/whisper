@@ -29,7 +29,7 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
     const activeProvider = providers.find((p) => p.id === activeProviderId);
     const setScreen = useAppStore((s) => s.setScreen);
 
-    const { audioSource, context, autoSubmit, resumeMode } = useOverlayStore();
+    const { audioSource, context, resumeMode } = useOverlayStore();
     const { deviceId: virtualDeviceId } = useSystemAudioDevice();
     const speechDeviceId = audioSource === "meeting" ? virtualDeviceId : undefined;
 
@@ -60,7 +60,7 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
                 text: promptText,
                 inputSelector: activeProvider?.id === "custom" ? (activeProvider as any).inputSelector : undefined,
                 submitSelector: activeProvider?.id === "custom" ? (activeProvider as any).submitSelector : undefined,
-                autoSubmit: isFinal ? autoSubmit : false,
+                autoSubmit: false,
                 append: true,
             });
             console.log("[BrowserView] inject_text successful!");

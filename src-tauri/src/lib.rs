@@ -55,6 +55,9 @@ pub fn run() {
             guard: Mutex::new(None),
         })
         .setup(|app| {
+            #[cfg(target_os = "macos")]
+            app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+
             let window = app
                 .get_webview_window("main")
                 .expect("Main window not found");
