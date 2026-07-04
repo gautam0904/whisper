@@ -10,6 +10,7 @@ import { useAppStore, APP_SCREEN } from "../../../shared/stores/appStore";
 import { invoke } from "@tauri-apps/api/core";
 import { useOverlayStore } from "../../overlay/store/overlayStore";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
+import { useSystemAudioDevice } from "../hooks/useSystemAudioDevice";
 import BrowserToolbar from "./BrowserToolbar";
 import AudioBar from "./AudioBar";
 import "./BrowserView.css";
@@ -28,7 +29,10 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
     const activeProvider = providers.find((p) => p.id === activeProviderId);
     const setScreen = useAppStore((s) => s.setScreen);
 
-    const { context, autoSubmit, resumeMode } = useOverlayStore();
+    const { audioSource, context, autoSubmit, resumeMode } = useOverlayStore();
+    const { deviceId: virtualDeviceId } = useSystemAudioDevice();
+    const speechDeviceId = audioSource === "meeting" ? virtualDeviceId : undefined;
+
     const [status, setStatus] = useState<"idle" | "loading" | "open">("idle");
     const isNavigating = useRef(false);
     const isClosed = useRef(false);
@@ -51,24 +55,29 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
         promptText += isFinal && promptText ? `QUESTION: "${text}"` : text;
 
         try {
+            console.log("[BrowserView] handleSpeechResult injecting text:", promptText, "isFinal:", isFinal);
             await invoke("inject_text", {
                 text: promptText,
                 inputSelector: activeProvider?.id === "custom" ? (activeProvider as any).inputSelector : undefined,
                 submitSelector: activeProvider?.id === "custom" ? (activeProvider as any).submitSelector : undefined,
                 autoSubmit: isFinal ? autoSubmit : false,
+                append: true,
             });
-        } catch {
-            /* ignored */
+            console.log("[BrowserView] inject_text successful!");
+        } catch (e) {
+            console.error("[BrowserView] inject_text failed:", e);
         }
     };
 
     const {
         isListening,
+        finalText,
         volume,
         errorState,
+        errorMessage,
         startSpeech,
         stopSpeech,
-    } = useSpeechRecognition(handleSpeechResult);
+    } = useSpeechRecognition(handleSpeechResult, speechDeviceId);
 
     const toggleListen = () => {
         if (isListening) stopSpeech();
@@ -171,6 +180,8 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
                     isListening={isListening}
                     volume={volume}
                     errorState={errorState}
+                    errorMessage={errorMessage}
+                    finalText={finalText}
                     onToggleListen={toggleListen}
                 />
             </div>

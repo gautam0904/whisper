@@ -290,13 +290,14 @@ export default function AudioInputSection() {
             {blackHoleSetupExpanded && (
                 <div className={styles.setupPanel}>
                     <div className={styles.setupTitle} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Settings size={16} /> {virtualDriverName || "BlackHole 2ch"} Setup Guide</div>
+                    
                     <div className={styles.step}>
                         <strong>Step 1: Install Virtual Driver</strong>
                         {virtualDriverName === "BlackHole 2ch" ? (
                             <>
                                 <div className={styles.codeBlock}>$ brew install blackhole-2ch</div>
                                 <div style={{ marginTop: "4px" }}>
-                                    Or download from:{" "}
+                                    Or download installer from:{" "}
                                     <a
                                         href="https://existential.audio/blackhole/"
                                         target="_blank"
@@ -315,50 +316,88 @@ export default function AudioInputSection() {
                                     target="_blank"
                                     rel="noreferrer"
                                     style={{ color: "var(--color-accent)" }}
-                                >
-                                    vb-audio.com/Cable/
-                                </a>
-                            </div>
-                        )}
-                    </div>
-                    <div className={styles.step}>
-                        <strong>Step 2: Configure System Audio Output</strong>
-                        <div className={styles.infoBox}>
-                            Route speaker output of Zoom/Teams/Meet and System Output to the virtual driver (e.g.{" "}
-                            {virtualDriverName || "BlackHole 2ch"}), then select the virtual driver as your source.
-                        </div>
-                    </div>
-                    <div className={styles.step}>
-                        <strong>Step 3: Verify Connection</strong>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
-                            <button type="button" className={styles.selectBtn} style={{ display: 'flex', alignItems: 'center', gap: '6px' }} onClick={startTestAudio}>
-                                {testActive ? <><Square size={14} /> Stop Test</> : <><Search size={14} /> Test Audio Capture</>}
-                            </button>
-                            {testActive && (
-                                <div className={styles.testWaveform}>
-                                    {testAmplitudes.map((h, i) => (
-                                        <div
-                                            key={i}
-                                            className={styles.waveBar}
-                                            style={{ height: `${h}px`, transition: "height 50ms ease" }}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    <div className={styles.setupActions}>
-                        <button
-                            type="button"
-                            className={styles.selectBtn}
-                            onClick={() => setBlackHoleSetupExpanded(false)}
-                            style={{ background: "var(--color-success)", color: "var(--color-bg-dark)", border: "none" }}
-                        >
-                            <Check size={14} style={{ marginRight: '6px' }} /> I've completed setup
-                        </button>
-                    </div>
-                </div>
-            )}
-        </div>
+                                  >
+                                      vb-audio.com/Cable/
+                                  </a>
+                              </div>
+                          )}
+                      </div>
+  
+                      {virtualDriverName === "BlackHole 2ch" ? (
+                          <>
+                              <div className={styles.step}>
+                                  <strong>Step 2: Hear Audio (Multi-Output Device Setup)</strong>
+                                  <div className={styles.infoBox}>
+                                      1. Click <strong>Auto-Configure</strong> above to open the <strong>Audio MIDI Setup</strong> utility.<br />
+                                      2. Click the <strong>+</strong> button (bottom-left) and choose <strong>Create Multi-Output Device</strong>.<br />
+                                      3. Check the boxes next to both <strong>BlackHole 2ch</strong> and your physical <strong>Speakers/Headphones</strong>.<br />
+                                      4. In Sound Settings, set your <strong>Output Device</strong> to this new <strong>Multi-Output Device</strong>.
+                                  </div>
+                              </div>
+                              <div className={styles.step}>
+                                  <strong>Step 3: Transcribe Audio (Default Input Setup)</strong>
+                                  <div className={styles.infoBox}>
+                                      Since browser speech recognition transcribes only from the default system microphone:<br />
+                                      1. Open Sound Settings.<br />
+                                      2. Set your system <strong>Input Device</strong> (Microphone) to <strong>BlackHole 2ch</strong>.<br />
+                                      <em>(Tip: Keep Zoom/Meet settings set to your normal physical mic so people on the call can still hear you.)</em>
+                                  </div>
+                              </div>
+                          </>
+                      ) : (
+                          <>
+                              <div className={styles.step}>
+                                  <strong>Step 2: Hear Audio (Listen to Device Setup)</strong>
+                                  <div className={styles.infoBox}>
+                                      1. Click <strong>Auto-Configure</strong> above to open the Windows <strong>Sound Control Panel</strong>.<br />
+                                      2. Go to the <strong>Recording</strong> tab, right-click <strong>Cable Output</strong>, and choose <strong>Properties</strong>.<br />
+                                      3. Go to the <strong>Listen</strong> tab and check <strong>Listen to this device</strong>.<br />
+                                      4. Choose your primary speakers/headphones in the dropdown, then click Apply.
+                                  </div>
+                              </div>
+                              <div className={styles.step}>
+                                  <strong>Step 3: Transcribe Audio (Default Input Setup)</strong>
+                                  <div className={styles.infoBox}>
+                                      1. In the Sound Control Panel's <strong>Recording</strong> tab, right-click <strong>Cable Output</strong>.<br />
+                                      2. Select <strong>Set as Default Device</strong>.<br />
+                                      <em>(Tip: Keep Zoom/Meet settings set to your normal physical mic so people on the call can still hear you.)</em>
+                                  </div>
+                              </div>
+                          </>
+                      )}
+  
+                      <div className={styles.step}>
+                          <strong>Step 4: Verify Connection</strong>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
+                              <button type="button" className={styles.selectBtn} style={{ display: 'flex', alignItems: 'center', gap: '6px' }} onClick={startTestAudio}>
+                                  {testActive ? <><Square size={14} /> Stop Test</> : <><Search size={14} /> Test Audio Capture</>}
+                              </button>
+                              {testActive && (
+                                  <div className={styles.testWaveform}>
+                                      {testAmplitudes.map((h, i) => (
+                                          <div
+                                              key={i}
+                                              className={styles.waveBar}
+                                              style={{ height: `${h}px`, transition: "height 50ms ease" }}
+                                          />
+                                      ))}
+                                  </div>
+                              )}
+                          </div>
+                      </div>
+                      
+                      <div className={styles.setupActions}>
+                          <button
+                              type="button"
+                              className={styles.selectBtn}
+                              onClick={() => setBlackHoleSetupExpanded(false)}
+                              style={{ background: "var(--color-success)", color: "var(--color-bg-dark)", border: "none" }}
+                          >
+                              <Check size={14} style={{ marginRight: '6px' }} /> Setup Complete
+                          </button>
+                      </div>
+                  </div>
+              )}
+          </div>
     );
 }

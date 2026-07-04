@@ -10,7 +10,12 @@ pub async fn check_mac_audio() -> Result<bool, AppError> {
         .map_err(|e| AppError::Internal(e.to_string()))?;
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(stdout.contains("BlackHole 2ch"))
+    
+    let is_installed = stdout.contains("BlackHole") 
+        || std::path::Path::new("/Library/Audio/Plug-Ins/HAL/BlackHole.driver").exists()
+        || std::path::Path::new("/Library/Audio/Plug-Ins/HAL/BlackHole2ch.driver").exists();
+        
+    Ok(is_installed)
 }
 
 #[cfg(target_os = "windows")]
@@ -47,15 +52,43 @@ pub async fn check_audio_driver() -> Result<bool, AppError> {
 pub async fn install_audio_driver() -> Result<(), AppError> {
     #[cfg(target_os = "macos")]
     {
-        // Install both BlackHole and switchaudio-osx
+        let bh_installed = std::path::Path::new("/Library/Audio/Plug-Ins/HAL/BlackHole.driver").exists()
+            || std::path::Path::new("/Library/Audio/Plug-Ins/HAL/BlackHole2ch.driver").exists()
+            || std::path::Path::new("/Library/Audio/Plug-Ins/HAL/BlackHole16ch.driver").exists();
+
+        let mut packages = vec!["switchaudio-osx"];
+        if !bh_installed {
+            packages.push("blackhole-2ch");
+        }
+
+        // Attempt to install quietly via brew
         let output = std::process::Command::new("brew")
-            .args(["install", "blackhole-2ch", "switchaudio-osx"])
+            .arg("install")
+            .args(&packages)
             .output()
             .map_err(|e| AppError::Internal(e.to_string()))?;
 
         if !output.status.success() {
             let err = String::from_utf8_lossy(&output.stderr);
-            return Err(AppError::Internal(format!("Brew install failed: {}", err)));
+            if err.contains("sudo: a terminal is required") {
+                // If it asks for sudo password, launch Terminal for the user to type it
+                let script = format!(
+                    "tell application \"Terminal\"\n\
+                     activate\n\
+                     do script \"brew install {} && echo '\\n✅ Installation complete! You can close this terminal window and return to Whisper.'\"\n\
+                     end tell",
+                     packages.join(" ")
+                );
+                std::process::Command::new("osascript")
+                    .arg("-e")
+                    .arg(&script)
+                    .spawn()
+                    .map_err(|e| AppError::Internal(e.to_string()))?;
+                
+                return Err(AppError::Internal("A Terminal window has been opened for you to enter your Mac password to install the audio driver. Once it finishes, try again.".to_string()));
+            } else {
+                return Err(AppError::Internal(format!("Brew install failed: {}", err)));
+            }
         }
     }
 
@@ -94,88 +127,23 @@ pub async fn install_audio_driver() -> Result<(), AppError> {
 pub async fn auto_configure_audio() -> Result<(), AppError> {
     #[cfg(target_os = "macos")]
     {
-        // Use SwitchAudioSource to set default output
-        let output = std::process::Command::new("SwitchAudioSource")
-            .args(["-s", "BlackHole 2ch"])
-            .output()
-            .map_err(|e| AppError::Internal(e.to_string()))?;
+        // Open Audio MIDI Setup so the user can easily create/configure Multi-Output Device
+        let _ = std::process::Command::new("open")
+            .arg("/System/Applications/Utilities/Audio MIDI Setup.app")
+            .status();
 
-        if !output.status.success() {
-            // Fallback to AppleScript UI Scripting if SwitchAudioSource fails or isn't in PATH
-            let ascript = r#"
-                tell application "System Preferences" to set current pane to pane "com.apple.preference.sound"
-                delay 1
-                tell application "System Events"
-                    tell process "System Settings"
-                        -- Best effort fallback, ideally switchaudio-osx works.
-                    end tell
-                end tell
-            "#;
-            let _ = std::process::Command::new("osascript")
-                .args(["-e", ascript])
-                .output();
-        }
+        // Also open Sound Settings panel
+        let _ = std::process::Command::new("open")
+            .arg("x-apple.systempreferences:com.apple.Sound-Settings.extension")
+            .status();
     }
 
     #[cfg(target_os = "windows")]
     {
-        // Use a known PowerShell snippet with C# reflection to set default audio device
-        // This avoids needing undocumented COM interfaces (IPolicyConfig) in Rust which is extremely complex.
-        let _ps_script = r#"
-            $code = @"
-            using System;
-            using System.Runtime.InteropServices;
-            [ComImport, Guid("87CE5498-68D6-44E5-9215-6DA47EF883D8"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-            public interface IPolicyConfig {
-                void GetMixFormat();
-                void GetDeviceFormat();
-                void ResetDeviceFormat();
-                void SetDeviceFormat();
-                void GetProcessingPeriod();
-                void SetProcessingPeriod();
-                void GetShareMode();
-                void SetShareMode();
-                void GetPropertyValue();
-                void SetPropertyValue();
-                void SetDefaultEndpoint([MarshalAs(UnmanagedType.LPWStr)] string deviceId, int role);
-                void SetEndpointVisibility();
-            }
-            [ComImport, Guid("294935CE-F637-4E7C-A41B-AB255460B862")]
-            public class PolicyConfigClient { }
-            "@
-            
-            Add-Type -TypeDefinition $code -Language CSharp
-            
-            # Note: A fully robust C# PolicyConfig implementation requires enumerating devices to get the exact Device ID.
-            # For simplicity, we use the registry or WMI to find the VB-Cable device ID.
-            $device = Get-WmiObject Win32_PnPEntity | Where-Object { $_.Name -match "CABLE Output" }
-            # If we wanted to fully automate this without a huge C# block, we can use an alternative tool.
-            # Due to the complexity of IPolicyConfig in pure PowerShell, this is a placeholder for the actual logic.
-            # Usually users use NirCmd for this: nircmd.exe setdefaultsounddevice "CABLE Input"
-        "#;
-
-        // Let's actually use a simpler approach: NirCmd is standard for this. We can download it temporarily.
-        let ps_script_nircmd = r#"
-            $nircmdPath = "$env:TEMP\nircmd.exe"
-            if (-not (Test-Path $nircmdPath)) {
-                Invoke-WebRequest -Uri "https://www.nirsoft.net/utils/nircmdc.exe" -OutFile $nircmdPath
-            }
-            & $nircmdPath setdefaultsounddevice "CABLE Input" 1
-            & $nircmdPath setdefaultsounddevice "CABLE Input" 2
-        "#;
-
-        let output = std::process::Command::new("powershell")
-            .args(["-NoProfile", "-Command", ps_script_nircmd])
-            .output()
-            .map_err(|e| AppError::Internal(e.to_string()))?;
-
-        if !output.status.success() {
-            let err = String::from_utf8_lossy(&output.stderr);
-            return Err(AppError::Internal(format!(
-                "Windows audio config failed: {}",
-                err
-            )));
-        }
+        // Open Sound Control Panel directly
+        let _ = std::process::Command::new("control.exe")
+            .arg("mmsys.cpl")
+            .status();
     }
 
     Ok(())
@@ -192,6 +160,64 @@ pub async fn get_original_audio_device(
 
     Ok(lock
         .as_ref()
-        .map(|g| g.original_device.clone())
+        .map(|g| g.original_output.clone())
         .unwrap_or_default())
+}
+
+#[tauri::command]
+pub async fn toggle_audio_routing(
+    enable: bool,
+    state: State<'_, AppAudioState>,
+) -> Result<(), AppError> {
+    #[cfg(target_os = "macos")]
+    {
+        if enable {
+            // Unmuted: route audio to BlackHole and set output to Multi-Output
+            // First, capture current state if not already captured
+            if let Ok(mut lock) = state.guard.lock() {
+                if lock.is_none() {
+                    if let Ok(guard) = crate::services::audio_service::capture_audio_state() {
+                        *lock = Some(guard);
+                    }
+                }
+            }
+
+            // Route audio
+            let _ = std::process::Command::new("SwitchAudioSource")
+                .args(["-s", "BlackHole 2ch", "-t", "input"])
+                .output();
+            let _ = std::process::Command::new("SwitchAudioSource")
+                .args(["-s", "Multi-Output Device", "-t", "output"])
+                .output();
+        } else {
+            // Muted: restore previous state
+            if let Ok(mut lock) = state.guard.lock() {
+                if let Some(ref guard) = *lock {
+                    let _ = crate::services::audio_service::restore_audio_state(guard);
+                }
+                // Clear the guard so we can capture fresh state next time
+                *lock = None;
+            }
+        }
+    }
+    
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn start_speech_recognition(app: tauri::AppHandle) -> Result<(), AppError> {
+    #[cfg(target_os = "macos")]
+    {
+        crate::services::speech_service::start_recognition(app)?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn stop_speech_recognition() -> Result<(), AppError> {
+    #[cfg(target_os = "macos")]
+    {
+        crate::services::speech_service::stop_recognition()?;
+    }
+    Ok(())
 }

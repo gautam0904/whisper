@@ -61,7 +61,7 @@ export interface OverlayActions {
 }
 
 const initialState: OverlayState = {
-    audioSource: null,
+    audioSource: "mic",
     micDeviceName: null,
     virtualDriverInstalled: false,
     virtualDriverName: null,

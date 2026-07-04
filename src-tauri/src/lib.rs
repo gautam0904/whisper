@@ -2,7 +2,7 @@ pub mod commands;
 pub mod error;
 pub mod services;
 
-use services::audio_service::{capture_original_output_device, restore_output_device, AudioResetGuard};
+use services::audio_service::{capture_audio_state, restore_audio_state, AudioResetGuard};
 use std::sync::Mutex;
 use tauri::Manager;
 use tauri_plugin_global_shortcut::GlobalShortcutExt;
@@ -29,12 +29,15 @@ fn exclude_from_screen_capture(window: &tauri::WebviewWindow) {
 #[cfg(target_os = "windows")]
 fn exclude_from_screen_capture(window: &tauri::WebviewWindow) {
     use windows::Win32::Foundation::HWND;
-    use windows::Win32::UI::WindowsAndMessaging::{SetWindowDisplayAffinity, WINDOW_DISPLAY_AFFINITY};
+    use windows::Win32::UI::WindowsAndMessaging::{
+        SetWindowDisplayAffinity, WDA_EXCLUDEFROMCAPTURE,
+    };
 
-    const WDA_EXCLUDEFROMCAPTURE: u32 = 0x00000011;
-
-    let hwnd = window.hwnd().expect("Failed to get HWND");
-    let _ = unsafe { SetWindowDisplayAffinity(HWND(hwnd.0 as *mut std::ffi::c_void), WINDOW_DISPLAY_AFFINITY(WDA_EXCLUDEFROMCAPTURE)) };
+    if let Ok(hwnd) = window.hwnd() {
+        unsafe {
+            let _ = SetWindowDisplayAffinity(HWND(hwnd.0 as *mut _), WDA_EXCLUDEFROMCAPTURE);
+        }
+    }
 }
 
 #[cfg(target_os = "linux")]
@@ -59,7 +62,7 @@ pub fn run() {
             exclude_from_screen_capture(&window);
 
             let audio_state = app.state::<AppAudioState>();
-            match capture_original_output_device() {
+            match capture_audio_state() {
                 Ok(guard) => {
                     if let Ok(mut lock) = audio_state.guard.lock() {
                         *lock = Some(guard);
@@ -79,7 +82,7 @@ pub fn run() {
                     if let Some(audio_state) = app.try_state::<AppAudioState>() {
                         if let Ok(lock) = audio_state.guard.lock() {
                             if let Some(ref guard) = *lock {
-                                let _ = restore_output_device(guard);
+                                let _ = restore_audio_state(guard);
                             }
                         }
                     }
@@ -105,11 +108,14 @@ pub fn run() {
             commands::permissions::check_permissions,
             commands::permissions::request_microphone,
             commands::permissions::open_microphone_settings,
-            commands::permissions::open_accessibility_settings,
+
             commands::audio::check_audio_driver,
             commands::audio::install_audio_driver,
             commands::audio::auto_configure_audio,
             commands::audio::get_original_audio_device,
+            commands::audio::toggle_audio_routing,
+            commands::audio::start_speech_recognition,
+            commands::audio::stop_speech_recognition,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")

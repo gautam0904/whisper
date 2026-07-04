@@ -27,3 +27,23 @@ To run and debug the application in development on macOS with working permission
    ```bash
    open src-tauri/target/debug/bundle/macos/whisper.app
    ```
+
+## Complete Project Cleanup
+
+If you run into dependency issues, weird caching behavior, or failed builds, you can completely clean the project by removing all Node.js and Rust build artifacts.
+
+Run the following command from the root of the project to perform a completely clean reset:
+
+```bash
+# Remove all node modules and lock file
+rm -rf node_modules package-lock.json
+
+# Remove Rust build target directory and Cargo lock file
+rm -rf src-tauri/target src-tauri/Cargo.lock
+
+# Re-install Node dependencies
+npm install
+
+# (Optional) Update Rust toolchain and dependencies
+cd src-tauri && cargo update && cd ..
+```

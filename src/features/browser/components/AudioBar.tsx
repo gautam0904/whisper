@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Mic, MicOff, AlertCircle, ArrowRight } from "lucide-react";
 import WaveformVisualizer from "./WaveformVisualizer";
 import styles from "./AudioBar.module.css";
@@ -8,7 +7,9 @@ import { useOverlayStore } from "../../overlay/store/overlayStore";
 interface AudioBarProps {
     isListening: boolean;
     volume: number;
-    errorState: "none" | "not-allowed" | "network";
+    errorState: "none" | "not-allowed" | "network" | "unavailable" | "no-speech";
+    errorMessage?: string;
+    finalText?: string;
     onToggleListen: () => void;
 }
 
@@ -16,11 +17,20 @@ export default function AudioBar({
     isListening,
     volume,
     errorState,
+    errorMessage,
+    finalText,
     onToggleListen,
 }: AudioBarProps) {
-    const [micActive, setMicActive] = useState(true);
-    const [systemActive, setSystemActive] = useState(false);
-    const { autoSubmit, setAutoSubmit } = useOverlayStore();
+    const { audioSource, setAudioSource, autoSubmit, setAutoSubmit } = useOverlayStore();
+
+    const getErrorMessage = () => {
+        if (errorMessage) return errorMessage;
+        if (errorState === "not-allowed") return "Mic permission denied — grant access in System Settings > Privacy > Speech Recognition";
+        if (errorState === "network") return "Network error — check your internet connection";
+        if (errorState === "unavailable") return "Speech recognition unavailable";
+        if (errorState === "no-speech") return "No speech detected — check your mic in System Settings";
+        return "";
+    };
 
     return (
         <div className={styles.audioBar}>
@@ -39,18 +49,31 @@ export default function AudioBar({
                 <span className={styles.injectIcon}>↳</span> Injecting <ArrowRight size={10} style={{ margin: '0 2px' }} /> AI
             </div>
 
-            <div className={styles.spacer} />
+            <div className={styles.spacer} style={{ 
+                flex: 1, 
+                overflow: 'hidden', 
+                textOverflow: 'ellipsis', 
+                whiteSpace: 'nowrap',
+                fontSize: '11px',
+                color: 'var(--color-text-secondary)',
+                padding: '0 12px',
+                direction: 'rtl' /* keeps the end of the string visible */
+            }}>
+                <span style={{ direction: 'ltr', display: 'inline-block' }}>
+                    {isListening && !finalText ? "Listening..." : (finalText || "")}
+                </span>
+            </div>
 
             <div className={styles.chipGroup}>
                 <div
-                    className={`${styles.chip} ${micActive ? styles.chipActive : ""}`}
-                    onClick={() => setMicActive(!micActive)}
+                    className={`${styles.chip} ${audioSource === "mic" ? styles.chipActive : ""}`}
+                    onClick={() => setAudioSource("mic")}
                 >
                     Mic
                 </div>
                 <div
-                    className={`${styles.chip} ${systemActive ? styles.chipActive : ""}`}
-                    onClick={() => setSystemActive(!systemActive)}
+                    className={`${styles.chip} ${audioSource === "meeting" ? styles.chipActive : ""}`}
+                    onClick={() => setAudioSource("meeting")}
                 >
                     System
                 </div>
@@ -69,9 +92,7 @@ export default function AudioBar({
             {errorState !== "none" && (
                 <div className={styles.errorBanner}>
                     <AlertCircle size={12} style={{ marginRight: "4px", display: "inline" }} />
-                    {errorState === "not-allowed"
-                        ? "Mic permission denied — click here to fix"
-                        : "Offline — Google STT unavailable"}
+                    {getErrorMessage()}
                 </div>
             )}
         </div>

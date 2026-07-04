@@ -1,41 +1,38 @@
 use crate::error::AppError;
 
 pub struct AudioResetGuard {
-    pub original_device: String,
+    pub original_output: String,
+    pub original_input: String,
 }
 
 #[cfg(target_os = "macos")]
-pub fn capture_original_output_device() -> Result<AudioResetGuard, AppError> {
-    let output = std::process::Command::new("SwitchAudioSource")
+pub fn capture_audio_state() -> Result<AudioResetGuard, AppError> {
+    let out_res = std::process::Command::new("SwitchAudioSource")
         .args(["-t", "output", "-c"])
         .output();
+        
+    let in_res = std::process::Command::new("SwitchAudioSource")
+        .args(["-t", "input", "-c"])
+        .output();
 
-    match output {
-        Ok(result) if result.status.success() => {
-            let raw = String::from_utf8_lossy(&result.stdout).trim().to_string();
-            if raw.is_empty() {
-                return Err(AppError::Audio(
-                    "SwitchAudioSource returned empty device name".to_string(),
-                ));
-            }
-            Ok(AudioResetGuard {
-                original_device: raw,
-            })
-        }
-        Ok(result) => {
-            let stderr = String::from_utf8_lossy(&result.stderr).trim().to_string();
-            Err(AppError::Audio(format!(
-                "SwitchAudioSource failed: {}",
-                stderr
-            )))
-        }
-        Err(_) => {
-            let fallback = capture_via_coreaudio();
-            fallback.map(|name| AudioResetGuard {
-                original_device: name,
-            })
-        }
+    let output_device = match out_res {
+        Ok(result) if result.status.success() => String::from_utf8_lossy(&result.stdout).trim().to_string(),
+        _ => capture_via_coreaudio().unwrap_or_default()
+    };
+    
+    let input_device = match in_res {
+        Ok(result) if result.status.success() => String::from_utf8_lossy(&result.stdout).trim().to_string(),
+        _ => "MacBook Pro Microphone".to_string() // Fallback
+    };
+    
+    if output_device.is_empty() && input_device.is_empty() {
+        return Err(AppError::Audio("Could not capture any audio devices".to_string()));
     }
+    
+    Ok(AudioResetGuard {
+        original_output: output_device,
+        original_input: input_device,
+    })
 }
 
 #[cfg(target_os = "macos")]
@@ -150,35 +147,31 @@ fn capture_via_coreaudio() -> Result<String, AppError> {
 }
 
 #[cfg(target_os = "macos")]
-pub fn restore_output_device(guard: &AudioResetGuard) -> Result<(), AppError> {
-    let output = std::process::Command::new("SwitchAudioSource")
-        .args(["-t", "output", "-s", &guard.original_device])
-        .output();
-
-    match output {
-        Ok(result) if result.status.success() => Ok(()),
-        Ok(result) => {
-            let stderr = String::from_utf8_lossy(&result.stderr).trim().to_string();
-            Err(AppError::Audio(format!(
-                "Failed to restore audio device '{}': {}",
-                guard.original_device, stderr
-            )))
-        }
-        Err(e) => Err(AppError::Audio(format!(
-            "SwitchAudioSource not available, cannot restore: {}",
-            e
-        ))),
+pub fn restore_audio_state(guard: &AudioResetGuard) -> Result<(), AppError> {
+    if !guard.original_output.is_empty() {
+        let _ = std::process::Command::new("SwitchAudioSource")
+            .args(["-t", "output", "-s", &guard.original_output])
+            .output();
     }
+    
+    if !guard.original_input.is_empty() {
+        let _ = std::process::Command::new("SwitchAudioSource")
+            .args(["-t", "input", "-s", &guard.original_input])
+            .output();
+    }
+    
+    Ok(())
 }
 
 #[cfg(not(target_os = "macos"))]
-pub fn capture_original_output_device() -> Result<AudioResetGuard, AppError> {
+pub fn capture_audio_state() -> Result<AudioResetGuard, AppError> {
     Ok(AudioResetGuard {
-        original_device: String::new(),
+        original_output: String::new(),
+        original_input: String::new(),
     })
 }
 
 #[cfg(not(target_os = "macos"))]
-pub fn restore_output_device(_guard: &AudioResetGuard) -> Result<(), AppError> {
+pub fn restore_audio_state(_guard: &AudioResetGuard) -> Result<(), AppError> {
     Ok(())
 }
