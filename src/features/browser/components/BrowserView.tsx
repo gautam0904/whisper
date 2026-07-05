@@ -29,7 +29,7 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
     const activeProvider = providers.find((p) => p.id === activeProviderId);
     const setScreen = useAppStore((s) => s.setScreen);
 
-    const { audioSource, context, resumeMode } = useOverlayStore();
+    const { audioSource, context, resumeMode, injectEnabled } = useOverlayStore();
     const { deviceId: virtualDeviceId } = useSystemAudioDevice();
     const speechDeviceId = audioSource === "meeting" ? virtualDeviceId : undefined;
 
@@ -38,6 +38,8 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
     const isClosed = useRef(false);
 
     const handleSpeechResult = async (text: string, isFinal: boolean) => {
+        if (!injectEnabled) return;
+
         let promptText = "";
 
         if (isFinal && resumeMode) {

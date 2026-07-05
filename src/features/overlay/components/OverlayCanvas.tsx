@@ -3,7 +3,6 @@ import GhostDot from "../../../shared/components/GhostDot/GhostDot";
 import { checkPermissions, OSPermissions, openAccessibilitySettings } from "../../../shared/services/permissionsService";
 import { AlertTriangle, ExternalLink, Settings, X, MessageSquare, Play, ShieldCheck } from "lucide-react";
 import AudioInputSection from "./AudioInputSection";
-import AIProviderSection from "./AIProviderSection";
 import AdvancedContextSection from "./AdvancedContextSection";
 import styles from "./OverlayCanvas.module.css";
 
@@ -60,8 +59,6 @@ export default function OverlayCanvas({
                 </h1>
 
                 <AudioInputSection />
-
-                <AIProviderSection />
 
                 <AdvancedContextSection />
 

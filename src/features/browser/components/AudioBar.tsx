@@ -21,7 +21,7 @@ export default function AudioBar({
     finalText,
     onToggleListen,
 }: AudioBarProps) {
-    const { audioSource, setAudioSource, autoSubmit, setAutoSubmit } = useOverlayStore();
+    const { audioSource, setAudioSource, autoSubmit, setAutoSubmit, injectEnabled, setInjectEnabled } = useOverlayStore();
 
     const getErrorMessage = () => {
         if (errorMessage) return errorMessage;
@@ -77,6 +77,15 @@ export default function AudioBar({
                 >
                     System
                 </div>
+            </div>
+
+            <div className={styles.modeToggle}>
+                <span>Inject</span>
+                <div
+                    className={`${styles.switch} ${injectEnabled ? styles.switchOn : ""}`}
+                    onClick={() => setInjectEnabled(!injectEnabled)}
+                    title={injectEnabled ? "Injection ON — speech will be appended to AI input" : "Injection OFF — speech will not be sent to AI"}
+                />
             </div>
 
             <div className={styles.modeToggle}>

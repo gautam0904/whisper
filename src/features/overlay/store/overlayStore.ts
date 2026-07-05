@@ -19,7 +19,7 @@ export interface OverlayState {
     micDeviceName: string | null;
     virtualDriverInstalled: boolean;
     virtualDriverName: "BlackHole 2ch" | "VB-Cable" | null;
-    selectedProvider: "chatgpt" | "gemini" | "deepseek" | "google" | "custom" | null;
+    selectedProvider: "chatgpt" | "gemini" | "deepseek" | "google" | "claude" | "perplexity" | "grok" | "mistral" | "custom" | null;
     customProviders: CustomProvider[];
     context: {
         resume: ContextItem;
@@ -27,6 +27,7 @@ export interface OverlayState {
         company: ContextItem;
     };
     autoSubmit: boolean;
+    injectEnabled: boolean;
     resumeMode: boolean;
     pauseThresholdMs: number;
     advancedContextExpanded: boolean;
@@ -43,11 +44,12 @@ export interface OverlayActions {
     setMicDeviceName: (name: string | null) => void;
     setVirtualDriverInstalled: (installed: boolean) => void;
     setVirtualDriverName: (name: "BlackHole 2ch" | "VB-Cable" | null) => void;
-    setSelectedProvider: (provider: "chatgpt" | "gemini" | "deepseek" | "google" | "custom" | null) => void;
+    setSelectedProvider: (provider: "chatgpt" | "gemini" | "deepseek" | "google" | "claude" | "perplexity" | "grok" | "mistral" | "custom" | null) => void;
     addCustomProvider: (provider: CustomProvider) => void;
     setContextText: (key: "resume" | "jobDescription" | "company", text: string) => void;
     setContextActive: (key: "resume" | "jobDescription" | "company", active: boolean) => void;
     setAutoSubmit: (auto: boolean) => void;
+    setInjectEnabled: (enabled: boolean) => void;
     setResumeMode: (mode: boolean) => void;
     setPauseThresholdMs: (threshold: number) => void;
     setAdvancedContextExpanded: (expanded: boolean) => void;
@@ -73,6 +75,7 @@ const initialState: OverlayState = {
         company: { text: "", active: false, charLimit: 2000 },
     },
     autoSubmit: true,
+    injectEnabled: true,
     resumeMode: true,
     pauseThresholdMs: 2000,
     advancedContextExpanded: false,
@@ -112,6 +115,7 @@ export const useOverlayStore = create<OverlayState & OverlayActions>((set) => ({
         }
     })),
     setAutoSubmit: (autoSubmit) => set({ autoSubmit }),
+    setInjectEnabled: (injectEnabled) => set({ injectEnabled }),
     setResumeMode: (resumeMode) => set({ resumeMode }),
     setPauseThresholdMs: (pauseThresholdMs) => set({ pauseThresholdMs }),
     setAdvancedContextExpanded: (advancedContextExpanded) => set({ advancedContextExpanded }),

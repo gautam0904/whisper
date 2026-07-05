@@ -18,37 +18,12 @@
   gap: var(--space-2);
 }
 
-.orbitArea {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  padding: var(--space-4) 0;
-}
-
-.hub {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--color-bg-panel);
-  border: 2px solid var(--color-border-active);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-xl);
-  box-shadow: var(--shadow-glow);
-  z-index: 2;
-  margin-bottom: var(--space-4);
-  animation: float 4s ease-in-out infinite;
-}
-
-.rayContainer {
-  display: flex;
-  justify-content: space-around;
+.providerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: var(--space-3) var(--space-2);
   width: 100%;
-  max-width: 500px;
-  margin-top: var(--space-2);
-  position: relative;
+  padding: var(--space-2) 0;
 }
 
 .providerCircle {
@@ -85,6 +60,21 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
+  background: transparent;
+  border: none;
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--duration-fast) ease;
+}
+
+.providerItem:hover {
+  background: var(--color-white-5);
+}
+
+.providerItemSelected {
+  background: var(--color-accent-dim);
+  border-radius: var(--radius-md);
 }
 
 .providerLabel {

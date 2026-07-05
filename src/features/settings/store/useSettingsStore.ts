@@ -6,7 +6,9 @@ export interface AIProvider {
     name: string;
     url: string;
     jsInjectionScript: string;
+    isBuiltIn?: boolean;
 }
+
 
 export interface SettingsState {
     providers: AIProvider[];
@@ -42,15 +44,53 @@ const DEFAULT_PROVIDERS: AIProvider[] = [
         id: 'chatgpt',
         name: 'ChatGPT',
         url: 'https://chat.openai.com',
-        jsInjectionScript: 'document.querySelector("textarea").value = __PROMPT__; document.querySelector("button[data-testid=\'send-button\']").click();'
+        jsInjectionScript: 'document.querySelector("textarea").value = __PROMPT__; document.querySelector("button[data-testid=\'send-button\']").click();',
+        isBuiltIn: true,
     },
     {
         id: 'gemini',
         name: 'Gemini',
         url: 'https://gemini.google.com',
-        jsInjectionScript: 'let el = document.querySelector(".ql-editor"); if(el) { el.innerText = __PROMPT__; }'
+        jsInjectionScript: 'let el = document.querySelector(".ql-editor"); if(el) { el.innerText = __PROMPT__; }',
+        isBuiltIn: true,
+    },
+    {
+        id: 'claude',
+        name: 'Claude',
+        url: 'https://claude.ai',
+        jsInjectionScript: 'let el = document.querySelector(".ProseMirror"); if(el) { el.innerText = __PROMPT__; }',
+        isBuiltIn: true,
+    },
+    {
+        id: 'perplexity',
+        name: 'Perplexity',
+        url: 'https://www.perplexity.ai',
+        jsInjectionScript: 'let el = document.querySelector("textarea"); if(el) { el.value = __PROMPT__; }',
+        isBuiltIn: true,
+    },
+    {
+        id: 'grok',
+        name: 'Grok',
+        url: 'https://grok.com',
+        jsInjectionScript: 'let el = document.querySelector("textarea"); if(el) { el.value = __PROMPT__; }',
+        isBuiltIn: true,
+    },
+    {
+        id: 'mistral',
+        name: 'Mistral',
+        url: 'https://chat.mistral.ai',
+        jsInjectionScript: 'let el = document.querySelector("textarea"); if(el) { el.value = __PROMPT__; }',
+        isBuiltIn: true,
+    },
+    {
+        id: 'deepseek',
+        name: 'DeepSeek',
+        url: 'https://chat.deepseek.com',
+        jsInjectionScript: 'let el = document.querySelector("textarea"); if(el) { el.value = __PROMPT__; }',
+        isBuiltIn: true,
     }
 ];
+
 
 const initialState: SettingsState = {
     providers: DEFAULT_PROVIDERS,

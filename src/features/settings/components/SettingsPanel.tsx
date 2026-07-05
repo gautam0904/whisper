@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { X, Mic, Volume2, Globe, ShieldCheck } from "lucide-react";
+import { X, Mic, Volume2, Globe, ShieldCheck, Plus } from "lucide-react";
 import { useAppStore, APP_SCREEN } from "../../../shared/stores/appStore";
 import { useSettingsStore, AIProvider } from "../index";
 import { useOverlayStore } from "../../overlay/store/overlayStore";
 import { invoke } from "@tauri-apps/api/core";
 import styles from "./SettingsPanel.module.css";
 import SecurityResetSection from "./SecurityResetSection";
+import AIProviderCRUD from "./AIProviderCRUD";
 
-type Tab = "sources" | "voice" | "chatgpt" | "gemini" | "deepseek" | "google" | "privacy";
+type Tab = "sources" | "voice" | "customai" | "privacy" | string;
 
 export default function SettingsPanel() {
     const setScreen = useAppStore((s) => s.setScreen);
@@ -88,6 +89,17 @@ export default function SettingsPanel() {
                         <span>{p.name}</span>
                     </button>
                 ))}
+
+                <div className={styles.sidebarHeader}>Custom AI</div>
+                <button
+                    type="button"
+                    className={`${styles.sidebarItem} ${activeTab === "customai" ? styles.sidebarItemActive : ""}`}
+                    onClick={() => setActiveTab("customai")}
+                >
+                    <Plus size={14} />
+                    <span>Add Custom AI</span>
+                </button>
+
                 <div className={styles.sidebarHeader}>Privacy</div>
                 <button
                     type="button"
@@ -239,6 +251,11 @@ export default function SettingsPanel() {
                         </div>
                     );
                 })}
+                {activeTab === "customai" && (
+                    <div className={styles.section}>
+                        <AIProviderCRUD />
+                    </div>
+                )}
                 {activeTab === "privacy" && (
                     <div className={styles.section}>
                         <SecurityResetSection />

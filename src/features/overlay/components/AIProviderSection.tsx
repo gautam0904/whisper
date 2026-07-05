@@ -1,7 +1,27 @@
 import { useState } from "react";
-import { Cpu, Plus, Sparkles, Brain, CheckCircle, XCircle } from "lucide-react";
+import { Cpu, Plus, Sparkles, CheckCircle, XCircle } from "lucide-react";
 import { useOverlayStore, CustomProvider } from "../store/overlayStore";
 import styles from "./AIProviderSection.module.css";
+
+const BUILT_IN_PROVIDERS = [
+    { id: "chatgpt", label: "ChatGPT", abbr: "CH", url: "https://chat.openai.com" },
+    { id: "gemini", label: "Gemini", abbr: "GE", url: "https://gemini.google.com" },
+    { id: "claude", label: "Claude", abbr: "CL", url: "https://claude.ai" },
+    { id: "perplexity", label: "Perplexity", abbr: "PX", url: "https://www.perplexity.ai" },
+    { id: "grok", label: "Grok", abbr: "GK", url: "https://grok.com" },
+    { id: "mistral", label: "Mistral", abbr: "MI", url: "https://chat.mistral.ai" },
+    { id: "deepseek", label: "DeepSeek", abbr: "DS", url: "https://chat.deepseek.com" },
+] as const;
+
+
+type BuiltInId = (typeof BUILT_IN_PROVIDERS)[number]["id"];
+
+function getProviderMeta(id: string, customProviders: CustomProvider[]) {
+    const builtin = BUILT_IN_PROVIDERS.find((p) => p.id === id);
+    if (builtin) return { label: builtin.label, url: builtin.url };
+    const custom = customProviders.find((p) => p.id === id);
+    return custom ? { label: custom.name, url: custom.url } : { label: "Custom", url: "" };
+}
 
 export default function AIProviderSection() {
     const { selectedProvider, customProviders, setSelectedProvider, addCustomProvider } = useOverlayStore();
@@ -39,23 +59,7 @@ export default function AIProviderSection() {
         }, 1200);
     };
 
-    const getProviderName = (id: string) => {
-        if (id === "chatgpt") return "ChatGPT";
-        if (id === "gemini") return "Gemini";
-        if (id === "deepseek") return "DeepSeek";
-        if (id === "google") return "Google";
-        const found = customProviders.find((p) => p.id === id);
-        return found ? found.name : "Custom";
-    };
-
-    const getProviderUrl = (id: string) => {
-        if (id === "chatgpt") return "https://chat.openai.com";
-        if (id === "gemini") return "https://gemini.google.com";
-        if (id === "deepseek") return "https://chat.deepseek.com";
-        if (id === "google") return "https://www.google.com";
-        const found = customProviders.find((p) => p.id === id);
-        return found ? found.url : "";
-    };
+    const meta = selectedProvider ? getProviderMeta(selectedProvider, customProviders) : null;
 
     return (
         <div className={styles.section}>
@@ -64,98 +68,57 @@ export default function AIProviderSection() {
                 <span>2. AI Provider Selection</span>
             </div>
 
-            <div className={styles.orbitArea}>
-                <div className={styles.hub}><Brain size={24} /></div>
-
-                <div className={styles.rayContainer}>
+            <div className={styles.providerGrid}>
+                {BUILT_IN_PROVIDERS.map((p) => (
                     <button
+                        key={p.id}
                         type="button"
-                        className={styles.providerItem}
-                        onClick={() => setSelectedProvider("chatgpt")}
+                        className={`${styles.providerItem} ${selectedProvider === p.id ? styles.providerItemSelected : ""}`}
+                        onClick={() => setSelectedProvider(p.id as BuiltInId)}
                     >
-                        <div className={`${styles.providerCircle} ${selectedProvider === "chatgpt" ? styles.selectedCircle : ""}`}>
-                            CH
+                        <div className={`${styles.providerCircle} ${selectedProvider === p.id ? styles.selectedCircle : ""}`}>
+                            {p.abbr}
                         </div>
-                        <span className={`${styles.providerLabel} ${selectedProvider === "chatgpt" ? styles.selectedLabel : ""}`}>
-                            ChatGPT
+                        <span className={`${styles.providerLabel} ${selectedProvider === p.id ? styles.selectedLabel : ""}`}>
+                            {p.label}
                         </span>
-                        <div className={`${styles.indicator} ${selectedProvider === "chatgpt" ? styles.indicatorGreen : ""}`} />
+                        <div className={`${styles.indicator} ${selectedProvider === p.id ? styles.indicatorGreen : ""}`} />
                     </button>
+                ))}
 
+                {customProviders.map((p) => (
                     <button
+                        key={p.id}
                         type="button"
-                        className={styles.providerItem}
-                        onClick={() => setSelectedProvider("gemini")}
+                        className={`${styles.providerItem} ${selectedProvider === p.id ? styles.providerItemSelected : ""}`}
+                        onClick={() => setSelectedProvider(p.id as any)}
                     >
-                        <div className={`${styles.providerCircle} ${selectedProvider === "gemini" ? styles.selectedCircle : ""}`}>
-                            GE
+                        <div className={`${styles.providerCircle} ${selectedProvider === p.id ? styles.selectedCircle : ""}`}>
+                            {p.name.substring(0, 2).toUpperCase()}
                         </div>
-                        <span className={`${styles.providerLabel} ${selectedProvider === "gemini" ? styles.selectedLabel : ""}`}>
-                            Gemini
+                        <span className={`${styles.providerLabel} ${selectedProvider === p.id ? styles.selectedLabel : ""}`}>
+                            {p.name}
                         </span>
-                        <div className={`${styles.indicator} ${selectedProvider === "gemini" ? styles.indicatorGreen : ""}`} />
+                        <div className={`${styles.indicator} ${selectedProvider === p.id ? styles.indicatorGreen : ""}`} />
                     </button>
+                ))}
 
-                    <button
-                        type="button"
-                        className={styles.providerItem}
-                        onClick={() => setSelectedProvider("deepseek")}
-                    >
-                        <div className={`${styles.providerCircle} ${selectedProvider === "deepseek" ? styles.selectedCircle : ""}`}>
-                            DS
-                        </div>
-                        <span className={`${styles.providerLabel} ${selectedProvider === "deepseek" ? styles.selectedLabel : ""}`}>
-                            DeepSeek
-                        </span>
-                        <div className={`${styles.indicator} ${selectedProvider === "deepseek" ? styles.indicatorGreen : ""}`} />
-                    </button>
-
-                    <button
-                        type="button"
-                        className={styles.providerItem}
-                        onClick={() => setSelectedProvider("google")}
-                    >
-                        <div className={`${styles.providerCircle} ${selectedProvider === "google" ? styles.selectedCircle : ""}`}>
-                            GO
-                        </div>
-                        <span className={`${styles.providerLabel} ${selectedProvider === "google" ? styles.selectedLabel : ""}`}>
-                            Google
-                        </span>
-                        <div className={`${styles.indicator} ${selectedProvider === "google" ? styles.indicatorGreen : ""}`} />
-                    </button>
-
-                    {customProviders.map((p) => (
-                        <button
-                            key={p.id}
-                            type="button"
-                            className={styles.providerItem}
-                            onClick={() => setSelectedProvider(p.id as any)}
-                        >
-                            <div className={`${styles.providerCircle} ${selectedProvider === p.id ? styles.selectedCircle : ""}`}>
-                                {p.name.substring(0, 2).toUpperCase()}
-                            </div>
-                            <span className={`${styles.providerLabel} ${selectedProvider === p.id ? styles.selectedLabel : ""}`}>
-                                {p.name}
-                            </span>
-                            <div className={`${styles.indicator} ${selectedProvider === p.id ? styles.indicatorGreen : ""}`} />
-                        </button>
-                    ))}
-
-                    <button type="button" className={styles.providerItem} onClick={() => setShowModal(true)}>
-                        <div className={styles.providerCircle}>
-                            <Plus size={18} />
-                        </div>
-                        <span className={styles.providerLabel}>Add</span>
-                    </button>
-                </div>
+                <button type="button" className={styles.providerItem} onClick={() => setShowModal(true)}>
+                    <div className={styles.providerCircle}>
+                        <Plus size={18} />
+                    </div>
+                    <span className={styles.providerLabel}>Add</span>
+                </button>
             </div>
 
-            {selectedProvider && (
+            {selectedProvider && meta && (
                 <div className={styles.infoBanner}>
                     <div>
-                        <strong>Selected:</strong> {getProviderName(selectedProvider)} ({getProviderUrl(selectedProvider)})
+                        <strong>Selected:</strong> {meta.label} ({meta.url})
                     </div>
-                    <div style={{ color: "var(--color-success)", display: 'flex', alignItems: 'center', gap: '4px' }}><CheckCircle size={14} /> Online | Last checked: 2s ago</div>
+                    <div style={{ color: "var(--color-success)", display: "flex", alignItems: "center", gap: "4px" }}>
+                        <CheckCircle size={14} /> Online | Last checked: 2s ago
+                    </div>
                 </div>
             )}
 
@@ -210,8 +173,16 @@ export default function AIProviderSection() {
                         {testState !== "idle" && (
                             <div style={{ display: "flex", gap: "6px", alignItems: "center", marginBottom: "16px", fontSize: "12px" }}>
                                 {testState === "loading" && <span>Testing connection...</span>}
-                                {testState === "success" && <span style={{ color: "var(--color-success)", display: 'flex', alignItems: 'center', gap: '4px' }}><CheckCircle size={14} /> Connection test successful!</span>}
-                                {testState === "error" && <span style={{ color: "var(--color-danger)", display: 'flex', alignItems: 'center', gap: '4px' }}><XCircle size={14} /> Invalid URL! Please enter a valid HTTP/HTTPS link.</span>}
+                                {testState === "success" && (
+                                    <span style={{ color: "var(--color-success)", display: "flex", alignItems: "center", gap: "4px" }}>
+                                        <CheckCircle size={14} /> Connection test successful!
+                                    </span>
+                                )}
+                                {testState === "error" && (
+                                    <span style={{ color: "var(--color-danger)", display: "flex", alignItems: "center", gap: "4px" }}>
+                                        <XCircle size={14} /> Invalid URL! Please enter a valid HTTP/HTTPS link.
+                                    </span>
+                                )}
                             </div>
                         )}
 

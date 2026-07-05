@@ -159,7 +159,7 @@ pub async fn inject_text(
     append: Option<bool>,
 ) -> Result<(), AppError> {
     let sel = input_selector.unwrap_or_else(|| {
-        "#prompt-textarea, [contenteditable='true'], textarea, .ql-editor".to_string()
+        "#prompt-textarea, .ql-editor[contenteditable='true'], [role='textbox'][contenteditable='true'], [contenteditable='true'], textarea".to_string()
     });
     let sub_sel = submit_selector.unwrap_or_else(|| {
         "button[type='submit'], button[data-testid*='send'], button[aria-label*='Send']".to_string()
@@ -188,79 +188,101 @@ pub async fn inject_text(
                 console.error('[Whisper Inject] Could not find any VISIBLE input element using selector:', selector);
                 return;
             }}
-            console.log('[Whisper Inject] Found input element:', input.tagName, input);
-            if (input) {{
-                if (input.tagName === 'TEXTAREA' || input.tagName === 'INPUT') {{
-                    const currentVal = input.value || '';
-                    let newVal = text;
-                    if (shouldAppend && currentVal) {{
-                        newVal = currentVal + (currentVal.endsWith(' ') || currentVal.endsWith('\n') ? '' : ' ') + text;
-                    }}
-                    const nativeInputSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
-                    const nativeTextAreaSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
-                    if (input.tagName === 'TEXTAREA' && nativeTextAreaSetter) {{
-                        nativeTextAreaSetter.call(input, newVal);
-                    }} else if (input.tagName === 'INPUT' && nativeInputSetter) {{
-                        nativeInputSetter.call(input, newVal);
-                    }} else {{
-                        input.value = newVal;
-                    }}
-                    input.dispatchEvent(new Event('input', {{ bubbles: true }}));
-                    input.dispatchEvent(new Event('change', {{ bubbles: true }}));
+            console.log('[Whisper Inject] Found input element:', input.tagName, input.className);
+
+            if (input.tagName === 'TEXTAREA' || input.tagName === 'INPUT') {{
+                const currentVal = input.value || '';
+                let newVal = text;
+                if (shouldAppend && currentVal) {{
+                    newVal = currentVal + (currentVal.endsWith(' ') || currentVal.endsWith('\n') ? '' : ' ') + text;
+                }}
+                const nativeTextAreaSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+                const nativeInputSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+                if (input.tagName === 'TEXTAREA' && nativeTextAreaSetter) {{
+                    nativeTextAreaSetter.call(input, newVal);
+                }} else if (input.tagName === 'INPUT' && nativeInputSetter) {{
+                    nativeInputSetter.call(input, newVal);
                 }} else {{
-                    input.focus();
-                    try {{
-                        const dt = new DataTransfer();
-                        const prefix = (shouldAppend && input.textContent && !input.textContent.endsWith(' ') && !input.textContent.endsWith('\n')) ? ' ' : '';
-                        dt.setData('text/plain', prefix + text);
-                        const pasteEvent = new ClipboardEvent('paste', {{
-                            clipboardData: dt,
+                    input.value = newVal;
+                }}
+                input.dispatchEvent(new Event('input', {{ bubbles: true }}));
+                input.dispatchEvent(new Event('change', {{ bubbles: true }}));
+
+            }} else {{
+                input.focus();
+
+                const selection = window.getSelection();
+                if (selection) {{
+                    const range = document.createRange();
+                    range.selectNodeContents(input);
+                    range.collapse(false);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }}
+
+                if (!shouldAppend) {{
+                    document.execCommand('selectAll', false, undefined);
+                }}
+
+                const currentText = input.innerText || input.textContent || '';
+                const needsSpace = shouldAppend && currentText.length > 0
+                    && !currentText.endsWith(' ')
+                    && !currentText.endsWith('\n');
+                const toInsert = needsSpace ? ' ' + text : text;
+
+                const inserted = document.execCommand('insertText', false, toInsert);
+                console.log('[Whisper Inject] execCommand insertText result:', inserted, 'text:', toInsert.substring(0, 40));
+
+                if (!inserted) {{
+                    console.warn('[Whisper Inject] execCommand failed, trying input event dispatch');
+                    const inputEvent = new InputEvent('beforeinput', {{
+                        inputType: 'insertText',
+                        data: toInsert,
+                        bubbles: true,
+                        cancelable: true,
+                    }});
+                    input.dispatchEvent(inputEvent);
+
+                    if (!inputEvent.defaultPrevented) {{
+                        try {{
+                            const dt = new DataTransfer();
+                            dt.setData('text/plain', toInsert);
+                            input.dispatchEvent(new ClipboardEvent('paste', {{
+                                clipboardData: dt,
+                                bubbles: true,
+                                cancelable: true
+                            }}));
+                            console.log('[Whisper Inject] Paste ClipboardEvent dispatched');
+                        }} catch(e) {{
+                            console.error('[Whisper Inject] All injection paths failed:', e);
+                        }}
+                    }}
+                }}
+
+                input.dispatchEvent(new Event('input', {{ bubbles: true }}));
+            }}
+
+            console.log('[Whisper Inject] Injection complete');
+
+            if ({}) {{
+                setTimeout(() => {{
+                    const btn = document.querySelector('{}');
+                    if (btn) {{
+                        btn.click();
+                        console.log('[Whisper Inject] Submit button clicked');
+                    }} else {{
+                        console.log('[Whisper Inject] No submit btn found, dispatching Enter');
+                        const enterEvent = new KeyboardEvent('keydown', {{
+                            key: 'Enter',
+                            code: 'Enter',
+                            keyCode: 13,
+                            which: 13,
                             bubbles: true,
                             cancelable: true
                         }});
-                        input.dispatchEvent(pasteEvent);
-                        console.log('[Whisper Inject] Paste event dispatched');
-                    }} catch (e) {{
-                        console.error('[Whisper Inject] DataTransfer paste failed, falling back to execCommand', e);
-                        if (!shouldAppend) {{
-                            document.execCommand('selectAll', false, null);
-                        }} else {{
-                            const selection = window.getSelection();
-                            const range = document.createRange();
-                            range.selectNodeContents(input);
-                            range.collapse(false);
-                            selection.removeAllRanges();
-                            selection.addRange(range);
-                            if (input.textContent && !input.textContent.endsWith(' ') && !input.textContent.endsWith('\n')) {{
-                                document.execCommand('insertText', false, ' ');
-                            }}
-                        }}
-                        document.execCommand('insertText', false, text);
-                        input.dispatchEvent(new Event('input', {{ bubbles: true }}));
-                        input.dispatchEvent(new Event('change', {{ bubbles: true }}));
+                        input.dispatchEvent(enterEvent);
                     }}
-                }}
-                console.log('[Whisper Inject] Text injected');
-                if ({}) {{
-                    setTimeout(() => {{
-                        const btn = document.querySelector('{}');
-                        if (btn) {{
-                            btn.click();
-                            console.log('[Whisper Inject] Submit button clicked');
-                        }} else {{
-                            console.log('[Whisper Inject] Submit button not found, dispatching Enter key');
-                            const enterEvent = new KeyboardEvent('keydown', {{
-                                key: 'Enter',
-                                code: 'Enter',
-                                keyCode: 13,
-                                which: 13,
-                                bubbles: true,
-                                cancelable: true
-                            }});
-                            input.dispatchEvent(enterEvent);
-                        }}
-                    }}, 100);
-                }}
+                }}, 100);
             }}
         }})();
         "#,
