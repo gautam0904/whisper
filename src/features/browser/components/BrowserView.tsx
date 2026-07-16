@@ -29,16 +29,18 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
     const activeProvider = providers.find((p) => p.id === activeProviderId);
     const setScreen = useAppStore((s) => s.setScreen);
 
-    const { audioSource, context, resumeMode, injectEnabled } = useOverlayStore();
-    const { deviceId: virtualDeviceId } = useSystemAudioDevice();
-    const speechDeviceId = audioSource === "meeting" ? virtualDeviceId : undefined;
+    const { audioSource } = useOverlayStore();
+    const { deviceId: virtualDeviceId, deviceLabel: virtualDeviceLabel, found: virtualDeviceFound, isDefault: virtualDeviceIsDefault } = useSystemAudioDevice();
+    const speechDeviceId = audioSource === "meeting" && virtualDeviceIsDefault ? virtualDeviceId : undefined;
 
     const [status, setStatus] = useState<"idle" | "loading" | "open">("idle");
     const isNavigating = useRef(false);
     const isClosed = useRef(false);
 
-    const handleSpeechResult = async (text: string, isFinal: boolean) => {
+    const handleSpeechResult = useCallback(async (text: string, isFinal: boolean) => {
+        const { injectEnabled, context, resumeMode } = useOverlayStore.getState();
         if (!injectEnabled) return;
+        if (!text.trim()) return;
 
         let promptText = "";
 
@@ -56,12 +58,16 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
 
         promptText += isFinal && promptText ? `QUESTION: "${text}"` : text;
 
+        if (!promptText.trim()) return;
+
         try {
+            const { providers, activeProviderId } = useSettingsStore.getState();
+            const provider = providers.find((p) => p.id === activeProviderId);
             console.log("[BrowserView] handleSpeechResult injecting text:", promptText, "isFinal:", isFinal);
             await invoke("inject_text", {
                 text: promptText,
-                inputSelector: activeProvider?.id === "custom" ? (activeProvider as any).inputSelector : undefined,
-                submitSelector: activeProvider?.id === "custom" ? (activeProvider as any).submitSelector : undefined,
+                inputSelector: provider?.id === "custom" ? (provider as any).inputSelector : undefined,
+                submitSelector: provider?.id === "custom" ? (provider as any).submitSelector : undefined,
                 autoSubmit: false,
                 append: true,
             });
@@ -69,7 +75,7 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
         } catch (e) {
             console.error("[BrowserView] inject_text failed:", e);
         }
-    };
+    }, []);
 
     const {
         isListening,
@@ -185,6 +191,9 @@ export default function BrowserView({ onClose }: BrowserViewProps) {
                     errorMessage={errorMessage}
                     finalText={finalText}
                     onToggleListen={toggleListen}
+                    virtualDeviceFound={virtualDeviceFound}
+                    virtualDeviceLabel={virtualDeviceLabel}
+                    virtualDeviceIsDefault={virtualDeviceIsDefault}
                 />
             </div>
 

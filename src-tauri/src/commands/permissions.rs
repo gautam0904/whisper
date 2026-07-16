@@ -60,6 +60,13 @@ pub async fn open_microphone_settings() -> Result<(), String> {
             .arg("x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone")
             .spawn();
     }
+    #[cfg(target_os = "windows")]
+    {
+        let _ = std::process::Command::new("ms-settings:privacy-microphone").spawn()
+            .or_else(|_| std::process::Command::new("cmd")
+                .args(["/C", "start", "ms-settings:privacy-microphone"])
+                .spawn());
+    }
     Ok(())
 }
 

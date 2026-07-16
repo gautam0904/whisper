@@ -99,11 +99,11 @@ pub async fn install_audio_driver() -> Result<(), AppError> {
             $ErrorActionPreference = 'Stop'
             $zipPath = "$env:TEMP\VBCABLE.zip"
             $extractPath = "$env:TEMP\VBCABLE"
-            Invoke-WebRequest -Uri "https://vb-audio.com/Cable/VBCABLE_Driver_Pack43.zip" -OutFile $zipPath
+            Invoke-WebRequest -Uri "https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack45.zip" -OutFile $zipPath
             if (Test-Path $extractPath) { Remove-Item -Recurse -Force $extractPath }
             Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
             $installer = "$extractPath\VBCABLE_Setup_x64.exe"
-            Start-Process -FilePath $installer -ArgumentList "-i", "-h" -Wait -NoNewWindow
+            Start-Process -FilePath $installer -ArgumentList "-i", "-h" -Wait -Verb RunAs
         "#;
 
         let output = std::process::Command::new("powershell")
@@ -140,9 +140,9 @@ pub async fn auto_configure_audio() -> Result<(), AppError> {
 
     #[cfg(target_os = "windows")]
     {
-        // Open Sound Control Panel directly
+        // Open Sound Control Panel directly to Recording tab (index 1)
         let _ = std::process::Command::new("control.exe")
-            .arg("mmsys.cpl")
+            .arg("mmsys.cpl,,1")
             .status();
     }
 
